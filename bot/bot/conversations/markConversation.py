@@ -1,52 +1,50 @@
-import json
-import requests
-
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, Filters
 
-PARTICIPANT, BEAUTY, COLOR, SHAPE = range(4)
+from ..api import fetch_api
 
-api_url_base = 'http://127.0.0.1:8000/api/'
-
-headers = {
-    'Content-Type': 'application/json',
-}
-
-api_url = '{}profiles'.format(api_url_base)
-response = requests.get(api_url, headers=headers)
-profiles = json.loads(response.content.decode('utf-8'))
-
-profilesChoices = [str(profile['participant_number']) for profile in profiles]
-marksChoices = [str(i) for i in range(0, 11)]
+NUMBER, BEAUTY, COLOR, SHAPE = range(4)
+marks_choices = [str(i) for i in range(0, 11)]
 
 
-def mark(bot, update):
+def mark(bot, update): # TODO: сделать restricted декоратор
+    judges = fetch_api('judges')
+    judge_usernames = [judge['telegram_username'] for judge in judges]
+    username = update.message.from_user.username
+
+    if username not in judge_usernames:
+        update.message.reply_text('Вы не имеете права оценивать участников.')
+        return ConversationHandler.END
+
+    participants = fetch_api('participants')
+    participant_numbers = [str(participant['number']) for participant in participants]
+
     update.message.reply_text(
         'Вы собираетесь оценить участника. '
         'Сначала выберите его номер.',
-        reply_markup=ReplyKeyboardMarkup([profilesChoices], one_time_keyboard=True)
+        reply_markup=ReplyKeyboardMarkup([participant_numbers], one_time_keyboard=True)
     )
 
-    return PARTICIPANT
+    return NUMBER
 
 
-def participant(bot, update):
+def number(bot, update):
+    participants = fetch_api('participants')
+    participant_numbers = [str(participant['number']) for participant in participants]
     participant_number = update.message.text
 
-    print(profilesChoices, participant_number)
-
-    if participant_number not in profilesChoices:
+    if participant_number not in participant_numbers:
         update.message.reply_text(
-            'Участника с таким номером нет.',
+            'Участника с номером {} нет.'.format(participant_number),
             reply_markup=ReplyKeyboardRemove()
         )
         return ConversationHandler.END
-    else:
-        update.message.reply_text(
-            'Вы оцениваете участника с номером {}. '
-            'Оцените красоту.'.format(participant_number),
-            reply_markup=ReplyKeyboardMarkup([marksChoices])
-        )
+
+    update.message.reply_text(
+        'Вы оцениваете участника с номером {}. '
+        'Оцените красоту.'.format(participant_number),
+        reply_markup=ReplyKeyboardMarkup([marks_choices])
+    )
 
     return BEAUTY
 
@@ -57,7 +55,7 @@ def beauty(bot, update):
     update.message.reply_text(
         'Ваша оценка за красоту: {}. '
         'Оцените цвет.'.format(mark),
-        reply_markup=ReplyKeyboardMarkup([marksChoices])
+        reply_markup=ReplyKeyboardMarkup([marks_choices])
     )
 
     return COLOR
@@ -69,7 +67,7 @@ def color(bot, update):
     update.message.reply_text(
         'Ваша оценка за цвет: {}. '
         'Оцените форму.'.format(mark),
-        reply_markup=ReplyKeyboardMarkup([marksChoices])
+        reply_markup=ReplyKeyboardMarkup([marks_choices])
     )
 
     return SHAPE
@@ -91,7 +89,7 @@ markConversationHandler = ConversationHandler(
     entry_points=[CommandHandler('mark', mark)],
 
     states={
-        PARTICIPANT: [MessageHandler(Filters.regex(r'\d+'), participant)],
+        NUMBER: [MessageHandler(Filters.regex(r'\d+'), number)],
         BEAUTY: [MessageHandler(Filters.regex(r'\d+'), beauty)],
         COLOR: [MessageHandler(Filters.regex(r'\d+'), color)],
         SHAPE: [MessageHandler(Filters.regex(r'\d+'), shape)],
