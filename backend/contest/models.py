@@ -1,15 +1,14 @@
 from django.db import models
 
-from django.contrib.auth.models import User
 
-
-class Profile(models.Model):
-    ROLE_CHOICES = [
-        (True, 'Judge'),
-        (False, 'Participant'),
-    ]
-
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+class Judge(models.Model):
     telegram_username = models.CharField(max_length=32)
-    participant_number = models.PositiveIntegerField(default=0) # TODO: разобраться с уникальностью номеров
-    role = models.BooleanField(choices=ROLE_CHOICES, default=False)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+
+
+class Participant(models.Model):
+    telegram_username = models.CharField(max_length=32)
+    first_name = models.CharField(max_length=100)
+    last_name = models.CharField(max_length=100)
+    photo = models.ImageField(upload_to='photos')

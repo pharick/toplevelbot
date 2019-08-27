@@ -1,18 +1,15 @@
 from rest_framework import serializers
 
-from .models import Profile
-from django.contrib.auth.models import User
+from .models import Judge, Participant
 
 
-class UserSerializer(serializers.ModelSerializer):
+class JudgeSerializer(serializers.ModelSerializer):
     class Meta:
-        model = User
-        fields = ['username', 'first_name', 'last_name']
+        model = Judge
+        fields = '__all__'
 
 
-class ProfileSerializer(serializers.ModelSerializer):
-    user = UserSerializer()
-
+class ParticipantSerializer(serializers.ModelSerializer):
     class Meta:
-        model = Profile
+        model = Participant
         fields = '__all__'
