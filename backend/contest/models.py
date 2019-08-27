@@ -6,9 +6,15 @@ class Judge(models.Model):
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
 
+    def __str__(self):
+        return '{} {}'.format(self.first_name, self.last_name)
+
 
 class Participant(models.Model):
     telegram_username = models.CharField(max_length=32)
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
     photo = models.ImageField(upload_to='photos')
+
+    def __str__(self):
+        return '{} {}'.format(self.first_name, self.last_name)
