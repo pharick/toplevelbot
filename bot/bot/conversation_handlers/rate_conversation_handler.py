@@ -6,8 +6,14 @@ from ..api import fetch_api
 NUMBER, BEAUTY, COLOR, SHAPE = range(4)
 marks_choices = [str(i) for i in range(0, 11)]
 
+mark_range_reply = 'Оценка дожна быть от 0 до 10. Пожалуйста, запустите команду /rate заново.'
 
-def mark(update, context):  # TODO: сделать restricted декоратор
+
+def check_mark(mark):
+    return 10 >= mark >= 0
+
+
+def rate(update, context):  # TODO: сделать restricted декоратор
     if not context.user_data['is_judge']:
         return ConversationHandler.END
 
@@ -49,9 +55,15 @@ def number(update, context):
 
 
 def beauty(update, context):
+    mark = int(update.message.text)
+
+    if not check_mark(mark):
+        update.message.reply_text(mark_range_reply)
+        return ConversationHandler.END
+
     participant_number = context.chat_data['participant_number']
     marks = context.chat_data['marks']
-    marks['beauty'] = update.message.text
+    marks['beauty'] = mark
 
     update.message.reply_text(
         'Вы оцениваете участника с номером {}.\n'
@@ -65,9 +77,15 @@ def beauty(update, context):
 
 
 def color(update, context):
+    mark = int(update.message.text)
+
+    if not check_mark(mark):
+        update.message.reply_text(mark_range_reply)
+        return ConversationHandler.END
+
     participant_number = context.chat_data['participant_number']
     marks = context.chat_data['marks']
-    marks['color'] = update.message.text
+    marks['color'] = mark
 
     update.message.reply_text(
         'Вы оцениваете участника с номером {}.\n'
@@ -81,9 +99,15 @@ def color(update, context):
 
 
 def shape(update, context):
+    mark = int(update.message.text)
+
+    if not check_mark(mark):
+        update.message.reply_text(mark_range_reply)
+        return ConversationHandler.END
+
     participant_number = context.chat_data['participant_number']
     marks = context.chat_data['marks']
-    marks['shape'] = update.message.text
+    marks['shape'] = mark
 
     update.message.reply_text(
         'Вы оцениваете участника с номером {}.\n'
@@ -97,8 +121,8 @@ def shape(update, context):
     return ConversationHandler.END
 
 
-markConversationHandler = ConversationHandler(
-    entry_points=[CommandHandler('mark', mark)],
+rateConversationHandler = ConversationHandler(
+    entry_points=[CommandHandler('rate', rate)],
 
     states={
         NUMBER: [MessageHandler(Filters.regex(r'\d+'), number)],

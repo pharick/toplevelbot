@@ -1,1 +1,1 @@
-from .mark_conversation_handler import markConversationHandler
+from .rate_conversation_handler import rateConversationHandler
