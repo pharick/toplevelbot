@@ -1,7 +1,7 @@
-from rest_framework import viewsets, views
+from rest_framework import viewsets
 
-from .models import Judge, Participant
-from .serializers import JudgeSerializer, ParticipantSerializer
+from .models import Judge, Participant, Rate
+from .serializers import JudgeSerializer, ParticipantSerializer, RateSerializer
 
 
 class JudgeViewSet(viewsets.ReadOnlyModelViewSet):
@@ -12,3 +12,8 @@ class JudgeViewSet(viewsets.ReadOnlyModelViewSet):
 class ParticipantViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ParticipantSerializer
     queryset = Participant.objects.all()
+
+
+class RateViewSet(viewsets.ModelViewSet):
+    serializer_class = RateSerializer
+    queryset = Rate.objects.all()

@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import HStoreField
 
 
 class Judge(models.Model):
@@ -19,3 +20,9 @@ class Participant(models.Model):
 
     def __str__(self):
         return '{} {}'.format(self.first_name, self.last_name)
+
+
+class Rate(models.Model):
+    participant_id = models.OneToOneField(Participant, on_delete=models.CASCADE)
+    judge_id = models.OneToOneField(Judge, on_delete=models.CASCADE)
+    marks = HStoreField()
