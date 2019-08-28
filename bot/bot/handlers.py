@@ -12,12 +12,15 @@ def start(update, context):
 
     is_judge = context.user_data['is_judge']
 
-    reply_text = 'Привет, {}.\n'.format(update.message.from_user.first_name)
+    reply_markdown = '*Привет, {}!*\n' \
+                     '----------\n' \
+                     '*Команды:*\n' \
+        .format(update.message.from_user.first_name)
 
     if is_judge:
-        reply_text += 'Вы можете оценивать участников.'
+        reply_markdown += '/rate - оценить участника'
 
-    update.message.reply_text(reply_text)
+    update.message.reply_markdown(reply_markdown)
 
 
 startHandler = CommandHandler('start', start)

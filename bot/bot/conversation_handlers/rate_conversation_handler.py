@@ -4,7 +4,10 @@ from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, Fi
 from ..api import fetch_api
 
 NUMBER, BEAUTY, COLOR, SHAPE = range(4)
-marks_choices = [str(i) for i in range(0, 11)]
+marks_choices = [['0', '1', '2'],
+                 ['3', '4', '5'],
+                 ['6', '7', '8'],
+                 ['9', '10']]
 
 mark_range_reply = 'Оценка дожна быть от 0 до 10. Пожалуйста, запустите команду /rate заново.'
 
@@ -18,12 +21,12 @@ def rate(update, context):  # TODO: сделать restricted декоратор
         return ConversationHandler.END
 
     participants = fetch_api('participants')
-    participant_numbers = [str(participant['number']) for participant in participants]
+    participant_numbers = [[str(participant['number'])] for participant in participants]
 
     update.message.reply_text(
         'Вы собираетесь оценить участника.\n'
         'Сначала выберите его номер.',
-        reply_markup=ReplyKeyboardMarkup([participant_numbers], one_time_keyboard=True)
+        reply_markup=ReplyKeyboardMarkup(participant_numbers, one_time_keyboard=True)
     )
 
     return NUMBER
@@ -52,7 +55,7 @@ def number(update, context):
         '----------\n'
         'Оцените красоту.'
         .format(participant_number),
-        reply_markup=ReplyKeyboardMarkup([marks_choices])
+        reply_markup=ReplyKeyboardMarkup(marks_choices)
     )
 
     return BEAUTY
@@ -76,7 +79,7 @@ def beauty(update, context):
         '----------\n'
         'Оцените цвет.'
         .format(participant_number, marks['beauty']),
-        reply_markup=ReplyKeyboardMarkup([marks_choices])
+        reply_markup=ReplyKeyboardMarkup(marks_choices)
     )
 
     return COLOR
@@ -101,7 +104,7 @@ def color(update, context):
         '----------\n'
         'Оцените форму.'
         .format(participant_number, marks['beauty'], marks['color']),
-        reply_markup=ReplyKeyboardMarkup([marks_choices])
+        reply_markup=ReplyKeyboardMarkup(marks_choices)
     )
 
     return SHAPE
