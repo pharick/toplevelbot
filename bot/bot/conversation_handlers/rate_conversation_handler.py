@@ -36,7 +36,9 @@ def number(update, context):
 
     if participant_number not in participant_numbers:
         update.message.reply_text(
-            'Участника с номером {} нет.'.format(participant_number),
+            'Участника с номером {} нет.'
+            'Пожалуйста, запустите команду /rate заново.'
+            .format(participant_number),
             reply_markup=ReplyKeyboardRemove()
         )
 
@@ -45,9 +47,11 @@ def number(update, context):
     context.chat_data['participant_number'] = participant_number
     context.chat_data['marks'] = {}
 
-    update.message.reply_text(
-        'Вы оцениваете участника с номером {}.\n'
-        'Оцените красоту.'.format(participant_number),
+    update.message.reply_markdown(
+        '*Оцениваем участника:* {}\n'
+        '----------\n'
+        'Оцените красоту.'
+        .format(participant_number),
         reply_markup=ReplyKeyboardMarkup([marks_choices])
     )
 
@@ -65,9 +69,11 @@ def beauty(update, context):
     marks = context.chat_data['marks']
     marks['beauty'] = mark
 
-    update.message.reply_text(
-        'Вы оцениваете участника с номером {}.\n'
-        'Ваша оценка за красоту: {}.\n'
+    update.message.reply_markdown(
+        '*Оцениваем участника:* {}\n'
+        '----------\n'
+        '*Красота:* {}\n'
+        '----------\n'
         'Оцените цвет.'
         .format(participant_number, marks['beauty']),
         reply_markup=ReplyKeyboardMarkup([marks_choices])
@@ -87,11 +93,14 @@ def color(update, context):
     marks = context.chat_data['marks']
     marks['color'] = mark
 
-    update.message.reply_text(
-        'Вы оцениваете участника с номером {}.\n'
-        'Ваша оценка за красоту: {}.\n'
-        'Ваша оценка за цвет: {}.\n'
-        'Оцените форму.'.format(participant_number, marks['beauty'], marks['color']),
+    update.message.reply_markdown(
+        '*Оцениваем участника:* {}\n'
+        '----------\n'
+        '*Красота:* {}\n'
+        '*Цвет:* {}\n'
+        '----------\n'
+        'Оцените форму.'
+        .format(participant_number, marks['beauty'], marks['color']),
         reply_markup=ReplyKeyboardMarkup([marks_choices])
     )
 
@@ -109,12 +118,13 @@ def shape(update, context):
     marks = context.chat_data['marks']
     marks['shape'] = mark
 
-    update.message.reply_text(
-        'Вы оцениваете участника с номером {}.\n'
-        'Ваша оценка за красоту: {}.\n'
-        'Ваша оценка за цвет: {}.\n'
-        'Ваша оценка за форму: {}.\n'
-        'Вы полностью оценили участника.'.format(participant_number, marks['beauty'], marks['color'], marks['shape']),
+    update.message.reply_markdown(
+        '*Вы полностью оценили участника:* {}\n'
+        '----------\n'
+        '*Красота:* {}\n'
+        '*Цвет:* {}\n'
+        '*Форма:* {}\n'
+        .format(participant_number, marks['beauty'], marks['color'], marks['shape']),
         reply_markup=ReplyKeyboardRemove()
     )
 
