@@ -7,20 +7,15 @@ NUMBER, BEAUTY, COLOR, SHAPE = range(4)
 marks_choices = [str(i) for i in range(0, 11)]
 
 
-def mark(bot, update): # TODO: сделать restricted декоратор
-    judges = fetch_api('judges')
-    judge_usernames = [judge['telegram_username'] for judge in judges]
-    username = update.message.from_user.username
-
-    if username not in judge_usernames:
-        update.message.reply_text('Вы не имеете права оценивать участников.')
+def mark(update, context):  # TODO: сделать restricted декоратор
+    if not context.user_data['is_judge']:
         return ConversationHandler.END
 
     participants = fetch_api('participants')
     participant_numbers = [str(participant['number']) for participant in participants]
 
     update.message.reply_text(
-        'Вы собираетесь оценить участника. '
+        'Вы собираетесь оценить участника.\n'
         'Сначала выберите его номер.',
         reply_markup=ReplyKeyboardMarkup([participant_numbers], one_time_keyboard=True)
     )
@@ -28,7 +23,7 @@ def mark(bot, update): # TODO: сделать restricted декоратор
     return NUMBER
 
 
-def number(bot, update):
+def number(update, context):
     participants = fetch_api('participants')
     participant_numbers = [str(participant['number']) for participant in participants]
     participant_number = update.message.text
@@ -38,10 +33,14 @@ def number(bot, update):
             'Участника с номером {} нет.'.format(participant_number),
             reply_markup=ReplyKeyboardRemove()
         )
+
         return ConversationHandler.END
 
+    context.chat_data['participant_number'] = participant_number
+    context.chat_data['marks'] = {}
+
     update.message.reply_text(
-        'Вы оцениваете участника с номером {}. '
+        'Вы оцениваете участника с номером {}.\n'
         'Оцените красоту.'.format(participant_number),
         reply_markup=ReplyKeyboardMarkup([marks_choices])
     )
@@ -49,36 +48,49 @@ def number(bot, update):
     return BEAUTY
 
 
-def beauty(bot, update):
-    mark = update.message.text
+def beauty(update, context):
+    participant_number = context.chat_data['participant_number']
+    marks = context.chat_data['marks']
+    marks['beauty'] = update.message.text
 
     update.message.reply_text(
-        'Ваша оценка за красоту: {}. '
-        'Оцените цвет.'.format(mark),
+        'Вы оцениваете участника с номером {}.\n'
+        'Ваша оценка за красоту: {}.\n'
+        'Оцените цвет.'
+        .format(participant_number, marks['beauty']),
         reply_markup=ReplyKeyboardMarkup([marks_choices])
     )
 
     return COLOR
 
 
-def color(bot, update):
-    mark = update.message.text
+def color(update, context):
+    participant_number = context.chat_data['participant_number']
+    marks = context.chat_data['marks']
+    marks['color'] = update.message.text
 
     update.message.reply_text(
-        'Ваша оценка за цвет: {}. '
-        'Оцените форму.'.format(mark),
+        'Вы оцениваете участника с номером {}.\n'
+        'Ваша оценка за красоту: {}.\n'
+        'Ваша оценка за цвет: {}.\n'
+        'Оцените форму.'.format(participant_number, marks['beauty'], marks['color']),
         reply_markup=ReplyKeyboardMarkup([marks_choices])
     )
 
     return SHAPE
 
 
-def shape(bot, update):
-    mark = update.message.text
+def shape(update, context):
+    participant_number = context.chat_data['participant_number']
+    marks = context.chat_data['marks']
+    marks['shape'] = update.message.text
 
     update.message.reply_text(
-        'Ваша оценка за форму: {}. '
-        'Вы полностью оценили участника.'.format(mark),
+        'Вы оцениваете участника с номером {}.\n'
+        'Ваша оценка за красоту: {}.\n'
+        'Ваша оценка за цвет: {}.\n'
+        'Ваша оценка за форму: {}.\n'
+        'Вы полностью оценили участника.'.format(participant_number, marks['beauty'], marks['color'], marks['shape']),
         reply_markup=ReplyKeyboardRemove()
     )
 
