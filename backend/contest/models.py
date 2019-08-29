@@ -23,6 +23,6 @@ class Participant(models.Model):
 
 
 class Rating(models.Model):
-    participant_id = models.ForeignKey(Participant, on_delete=models.CASCADE)
-    judge_id = models.ForeignKey(Judge, on_delete=models.CASCADE)
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    judge = models.ForeignKey(Judge, on_delete=models.CASCADE)
     marks = HStoreField()
