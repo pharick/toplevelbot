@@ -129,7 +129,8 @@ def shape(update, context):
         'marks': marks,
     }
 
-    Api.post('ratings', rating)
+    res = Api.post('ratings', rating)
+    print(res)
 
     update.message.reply_markdown(
         '*Вы полностью оценили участника:* {}\n'
