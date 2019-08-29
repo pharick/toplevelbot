@@ -1,7 +1,7 @@
 from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, Filters
 
-from ..api import fetch_api
+from ..api import Api
 
 NUMBER, BEAUTY, COLOR, SHAPE = range(4)
 marks_choices = [['0', '1', '2'],
@@ -20,7 +20,7 @@ def rate(update, context):  # TODO: сделать restricted декоратор
     if not context.user_data['is_judge']:
         return ConversationHandler.END
 
-    participants = fetch_api('participants')
+    participants = Api.get('participants')
     participant_numbers = [[str(participant['number'])] for participant in participants]
 
     update.message.reply_text(
@@ -33,7 +33,7 @@ def rate(update, context):  # TODO: сделать restricted декоратор
 
 
 def number(update, context):
-    participants = fetch_api('participants')
+    participants = Api.get('participants')
     participant_numbers = [str(participant['number']) for participant in participants]
     participant_number = update.message.text
 
@@ -47,7 +47,7 @@ def number(update, context):
 
         return ConversationHandler.END
 
-    context.chat_data['participant_number'] = participant_number
+    context.chat_data['participant'] = Api.get('participants', {'number': participant_number})[0]
     context.chat_data['marks'] = {}
 
     update.message.reply_markdown(
@@ -68,7 +68,7 @@ def beauty(update, context):
         update.message.reply_text(mark_range_reply)
         return ConversationHandler.END
 
-    participant_number = context.chat_data['participant_number']
+    participant = context.chat_data['participant']
     marks = context.chat_data['marks']
     marks['beauty'] = mark
 
@@ -78,7 +78,7 @@ def beauty(update, context):
         '*Красота:* {}\n'
         '----------\n'
         'Оцените цвет.'
-        .format(participant_number, marks['beauty']),
+        .format(participant['number'], marks['beauty']),
         reply_markup=ReplyKeyboardMarkup(marks_choices)
     )
 
@@ -92,7 +92,7 @@ def color(update, context):
         update.message.reply_text(mark_range_reply)
         return ConversationHandler.END
 
-    participant_number = context.chat_data['participant_number']
+    participant = context.chat_data['participant']
     marks = context.chat_data['marks']
     marks['color'] = mark
 
@@ -103,7 +103,7 @@ def color(update, context):
         '*Цвет:* {}\n'
         '----------\n'
         'Оцените форму.'
-        .format(participant_number, marks['beauty'], marks['color']),
+        .format(participant['number'], marks['beauty'], marks['color']),
         reply_markup=ReplyKeyboardMarkup(marks_choices)
     )
 
@@ -117,9 +117,19 @@ def shape(update, context):
         update.message.reply_text(mark_range_reply)
         return ConversationHandler.END
 
-    participant_number = context.chat_data['participant_number']
+    participant = context.chat_data['participant']
     marks = context.chat_data['marks']
     marks['shape'] = mark
+
+    judge = context.user_data['judge']
+
+    rating = {
+        'participant_id': participant['id'],
+        'judge_id': judge['id'],
+        'marks': marks,
+    }
+
+    Api.post('ratings', rating)
 
     update.message.reply_markdown(
         '*Вы полностью оценили участника:* {}\n'
@@ -127,7 +137,7 @@ def shape(update, context):
         '*Красота:* {}\n'
         '*Цвет:* {}\n'
         '*Форма:* {}\n'
-        .format(participant_number, marks['beauty'], marks['color'], marks['shape']),
+        .format(participant['number'], marks['beauty'], marks['color'], marks['shape']),
         reply_markup=ReplyKeyboardRemove()
     )
 

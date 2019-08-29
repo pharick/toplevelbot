@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Judge, Participant, Rate
+from .models import Judge, Participant, Rating
 
 
 class JudgeSerializer(serializers.ModelSerializer):
@@ -15,7 +15,9 @@ class ParticipantSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class RateSerializer(serializers.ModelSerializer):
+class RatingSerializer(serializers.ModelSerializer):
+    marks = serializers.DictField()
+
     class Meta:
-        model = Rate
+        model = Rating
         fields = '__all__'

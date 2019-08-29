@@ -4,6 +4,7 @@ cffi==1.12.3
 chardet==3.0.4
 cryptography==2.7
 Django==2.2.4
+django-filter==2.2.0
 djangorestframework==3.10.2
 future==0.17.1
 idna==2.8

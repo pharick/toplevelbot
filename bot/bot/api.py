@@ -1,19 +1,33 @@
 import json
 import requests
 
-api_url_base = 'http://127.0.0.1:8000/api/'
 
-headers = {
-    'Content-Type': 'application/json',
-}
+class Api:
+    url_base = 'http://127.0.0.1:8000/api/'
 
+    headers = {
+        'Content-Type': 'application/json',
+    }
 
-def fetch_api(endpoint):
-    api_url = '{}{}'.format(api_url_base, endpoint)
-    response = requests.get(api_url, headers=headers)
+    @staticmethod
+    def get(endpoint, args={}):
+        args_string = '&'.join(['='.join([arg[0], arg[1]]) for arg in args.items()])
+        api_url = '{}{}/?{}'.format(Api.url_base, endpoint, args_string)
+        response = requests.get(api_url, headers=Api.headers)
 
-    if response.status_code != 200:
-        return None
+        if response.status_code != 200:
+            return None
 
-    data = json.loads(response.content.decode('utf-8'))
-    return data
+        data = json.loads(response.content.decode('utf-8'))
+        return data
+
+    @staticmethod
+    def post(endpoint, data):
+        api_url = '{}{}/'.format(Api.url_base, endpoint)
+        response = requests.post(api_url, headers=Api.headers, json=data)
+
+        if response.status_code != 201:
+            return None
+
+        data = json.loads(response.content.decode('utf-8'))
+        return data
