@@ -53,7 +53,7 @@ def number(update, context):
     ratings = Api.get('ratings', {'judge': judge['id']})
     rated_participant_ids = [rating['participant'] for rating in ratings]
 
-    participant = Api.get('participants', {'number': participant_number})[0]
+    participant = Api.get('participants', {'number': participant_number})[0]  # TODO: переделать без запросаы
 
     if participant['id'] in rated_participant_ids:
         update.message.reply_text(
