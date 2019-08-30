@@ -11,8 +11,8 @@ class Api:
 
     @staticmethod
     def get(endpoint, args={}):
-        args_string = '&'.join(['='.join([arg[0], arg[1]]) for arg in args.items()])
-        api_url = '{}{}/?{}'.format(Api.url_base, endpoint, args_string)
+        arg_strings = '&'.join(['='.join([str(arg[0]), str(arg[1])]) for arg in args.items()])
+        api_url = '{}{}/?{}'.format(Api.url_base, endpoint, arg_strings)
         response = requests.get(api_url, headers=Api.headers)
         data = json.loads(response.content.decode('utf-8'))
         return data
