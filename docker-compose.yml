@@ -1,0 +1,33 @@
+version: '3'
+
+services:
+  db:
+    build: ./db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=toplevel
+      - POSTGRES_PASSWORD=toplevel
+      - POSTGRES_DB=toplevel
+
+  django:
+    build: ./backend
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000
+    volumes:
+      - ./backend:/code
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=1
+      - SECRET_KEY=94c7xjmgahwnfr+-f0@loe-4p3ahen0^n=jde^#ua3u)2(3(qj
+      - SQL_ENGINE=django.db.backends.postgresql_psycopg2
+      - SQL_DATABASE=toplevel
+      - SQL_USER=toplevel
+      - SQL_PASSWORD=toplevel
+      - SQL_HOST=db
+      - SQL_PORT=5432
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:
