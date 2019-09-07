@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Judge, Participant, Rating
+from .models import Judge, Participant, Rating, ParticipantSession
 
 
 class JudgeSerializer(serializers.ModelSerializer):
@@ -20,4 +20,10 @@ class RatingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rating
+        fields = '__all__'
+
+
+class ParticipantSessionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ParticipantSession
         fields = '__all__'

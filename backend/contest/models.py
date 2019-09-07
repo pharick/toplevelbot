@@ -26,3 +26,8 @@ class Rating(models.Model):
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
     judge = models.ForeignKey(Judge, on_delete=models.CASCADE)
     marks = HStoreField()
+
+
+class ParticipantSession(models.Model):
+    participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
+    chat_id = models.PositiveIntegerField(unique=True)
