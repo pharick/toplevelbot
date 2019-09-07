@@ -1,24 +1,22 @@
 from telegram.ext import CommandHandler
 from .api import Api
+from .settings import separator
 
 
 def start(update, context):
-    if 'is_judge' not in context.user_data:
-        judges = Api.get('judges')
-        judge_usernames = [judge['telegram_username'] for judge in judges]
-        username = update.message.from_user.username
-        context.user_data['is_judge'] = username in judge_usernames
+    username = update.message.from_user.username
+    judge = Api.get(f'judges/{username}')
+
+    if judge.status_code == 200:
+        context.user_data['is_judge'] = True
+        context.user_data['judge'] = judge.json()
 
     is_judge = context.user_data['is_judge']
+    first_name = update.message.from_user.first_name
 
-    if is_judge:
-        judge = Api.get('judges/{}'.format(update.message.from_user.username))
-        context.user_data['judge'] = judge
-
-    reply_markdown = '*Привет, {}!*\n' \
-                     '----------\n' \
-                     '*Команды:*\n' \
-                     .format(update.message.from_user.first_name)
+    reply_markdown = f'*Привет, {first_name}!*\n' \
+                     f'{separator}\n' \
+                     '*Команды:*\n'
 
     if is_judge:
         reply_markdown += '/rate - оценить участника'

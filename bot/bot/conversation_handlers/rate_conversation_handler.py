@@ -2,6 +2,7 @@ from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
 from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, Filters
 
 from ..api import Api
+from ..settings import separator
 
 NUMBER, BEAUTY, COLOR, SHAPE = range(4)
 marks_choices = [['0', '1', '2'],
@@ -20,10 +21,16 @@ def rate(update, context):  # TODO: сделать restricted декоратор
     if not context.user_data['is_judge']:
         return ConversationHandler.END
 
-    participants = Api.get('participants')
-    participant_numbers = [participant['number'] for participant in participants]
+    judge = context.user_data['judge']
+    participants = Api.get('participants').json()
+    ratings = Api.get('ratings', {'judge': judge['id']}).json()
 
-    participant_choices = [[str(participant_number)] for participant_number in participant_numbers]
+    rated_participants = [rating['participant'] for rating in ratings]
+    participants = {participant['number']: participant for participant in participants
+                    if participant['id'] not in rated_participants}
+
+    context.user_data['participants'] = participants
+    participant_choices = [[str(participant)] for participant in participants.keys()]
 
     update.message.reply_text(
         'Вы собираетесь оценить участника.\n'
@@ -35,43 +42,25 @@ def rate(update, context):  # TODO: сделать restricted декоратор
 
 
 def number(update, context):
-    participants = Api.get('participants')
-    participant_numbers = [participant['number'] for participant in participants]
+    participants = context.user_data['participants']
     participant_number = int(update.message.text)
 
-    if participant_number not in participant_numbers:
+    if participant_number not in participants.keys():
         update.message.reply_text(
-            'Участника #{} нет.'
-            'Пожалуйста, запустите команду /rate заново.'
-            .format(participant_number),
+            f'Участника #{participant_number} нет или вы уже оценили его.\n'
+            'Пожалуйста, запустите команду /rate заново.',
             reply_markup=ReplyKeyboardRemove()
         )
 
         return ConversationHandler.END
 
-    judge = context.user_data['judge']
-    ratings = Api.get('ratings', {'judge': judge['id']})
-    rated_participant_ids = [rating['participant'] for rating in ratings]
-
-    participant = Api.get('participants', {'number': participant_number})[0]  # TODO: переделать без запросаы
-
-    if participant['id'] in rated_participant_ids:
-        update.message.reply_text(
-            'Вы уже оценили участника #{}. Запустите команду /rate заново и выберите другого.'
-            .format(participant_number),
-            reply_markup=ReplyKeyboardRemove()
-        )
-
-        return ConversationHandler.END
-
-    context.chat_data['participant'] = Api.get('participants', {'number': participant_number})[0]
+    context.chat_data['participant'] = participants[participant_number]
     context.chat_data['marks'] = {}
 
     update.message.reply_markdown(
-        '*Оцениваем участника #{}*\n'
-        '----------\n'
-        'Оцените красоту.'
-        .format(participant_number),
+        f'*Оцениваем участника #{participant_number}*\n'
+        f'{separator}\n'
+        'Оцените красоту.',
         reply_markup=ReplyKeyboardMarkup(marks_choices)
     )
 
@@ -90,12 +79,11 @@ def beauty(update, context):
     marks['beauty'] = mark
 
     update.message.reply_markdown(
-        '*Оцениваем участника #{}*\n'
-        '----------\n'
-        '*Красота:* {}\n'
-        '----------\n'
-        'Оцените цвет.'
-        .format(participant['number'], marks['beauty']),
+        f'*Оцениваем участника #{participant["number"]}*\n'
+        f'{separator}\n'
+        f'*Красота:* {marks["beauty"]}\n'
+        f'{separator}\n'
+        'Оцените цвет.',
         reply_markup=ReplyKeyboardMarkup(marks_choices)
     )
 
@@ -114,13 +102,12 @@ def color(update, context):
     marks['color'] = mark
 
     update.message.reply_markdown(
-        '*Оцениваем участника #{}*\n'
-        '----------\n'
-        '*Красота:* {}\n'
-        '*Цвет:* {}\n'
-        '----------\n'
-        'Оцените форму.'
-        .format(participant['number'], marks['beauty'], marks['color']),
+        f'*Оцениваем участника #{participant["number"]}*\n'
+        f'{separator}\n'
+        f'*Красота:* {marks["beauty"]}\n'
+        f'*Цвет:* {marks["color"]}\n'
+        f'{separator}\n'
+        'Оцените форму.',
         reply_markup=ReplyKeyboardMarkup(marks_choices)
     )
 
@@ -149,12 +136,11 @@ def shape(update, context):
     Api.post('ratings', rating)
 
     update.message.reply_markdown(
-        '*Вы оценили участника #{}*\n'
-        '----------\n'
-        '*Красота:* {}\n'
-        '*Цвет:* {}\n'
-        '*Форма:* {}\n'
-        .format(participant['number'], marks['beauty'], marks['color'], marks['shape']),
+        f'*Вы оценили участника #{participant["number"]}*\n'
+        f'{separator}\n'
+        f'*Красота:* {marks["beauty"]}\n'
+        f'*Цвет:* {marks["color"]}\n'
+        f'*Форма:* {marks["shape"]}\n',
         reply_markup=ReplyKeyboardRemove()
     )
 
