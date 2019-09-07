@@ -1,4 +1,4 @@
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode
 from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, Filters
 
 from ..api import Api
@@ -15,6 +15,23 @@ mark_range_reply = 'Оценка дожна быть от 0 до 10. Пожал�
 
 def check_mark(mark):
     return 10 >= mark >= 0
+
+
+def send_participant_notification(bot, participant_id, judge_name, marks):
+    participant_session = Api.get(f'participant-sessions/{participant_id}')
+
+    if participant_session.status_code != 200:
+        return
+
+    chat_id = participant_session.json()['chat_id']
+
+    participant_notification_message = f'Вас оценил судья {judge_name}.\n' \
+                                       f'{separator}\n' \
+                                       f'*Красота:* {marks["beauty"]}\n' \
+                                       f'*Цвет:* {marks["color"]}\n' \
+                                       f'*Форма:* {marks["shape"]}\n'
+
+    bot.send_message(chat_id, participant_notification_message, ParseMode.MARKDOWN)
 
 
 def rate(update, context):  # TODO: сделать restricted декоратор
@@ -143,6 +160,9 @@ def shape(update, context):
         f'*Форма:* {marks["shape"]}\n',
         reply_markup=ReplyKeyboardRemove()
     )
+
+    judge_name = f'{judge["first_name"]} {judge["last_name"]}'
+    send_participant_notification(context.bot, participant['id'], judge_name, marks)
 
     return ConversationHandler.END
 
