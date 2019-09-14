@@ -12,7 +12,7 @@ services:
 
   django:
     build: ./backend
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000
+    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - ./backend:/code
     ports:
@@ -28,6 +28,12 @@ services:
       - SQL_PORT=5432
     depends_on:
       - db
+
+  bot:
+    build: ./bot
+    command: bash -c "python start.py"
+    depends_on:
+      - django
 
 volumes:
   postgres_data:
