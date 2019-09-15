@@ -11,6 +11,8 @@ def start(update, context):
     if judge.status_code == 200:
         context.user_data['is_judge'] = True
         context.user_data['judge'] = judge.json()
+    else:
+        context.user_data['is_judge'] = False
 
     if participant.status_code == 200:
         context.user_data['participant'] = participant.json()
