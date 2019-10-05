@@ -8,13 +8,29 @@ NUMBER, BEAUTY, COLOR, SHAPE = range(4)
 marks_choices = [['0', '1', '2'],
                  ['3', '4', '5'],
                  ['6', '7', '8'],
-                 ['9', '10']]
+                 ['9', '10', '/cancel']]
 
 mark_range_reply = 'Оценка дожна быть от 0 до 10. Пожалуйста, запустите команду /rate заново.'
 
 
 def check_mark(mark):
     return 10 >= mark >= 0
+
+
+def make_participant_choices(participants, line_len):
+    count = 0
+    line = -1
+    participant_choices = []
+
+    for participant in participants.keys():
+        if count % line_len == 0:
+            line += 1
+            participant_choices.append([])
+
+        participant_choices[line].append(str(participant))
+        count += 1
+
+    return participant_choices
 
 
 def send_participant_notification(bot, participant_id, judge_name, marks):
@@ -34,7 +50,7 @@ def send_participant_notification(bot, participant_id, judge_name, marks):
     bot.send_message(chat_id, participant_notification_message, ParseMode.MARKDOWN)
 
 
-def rate(update, context):  # TODO: сделать restricted декоратор
+def rate(update, context):
     if not context.user_data['is_judge']:
         return ConversationHandler.END
 
@@ -47,7 +63,7 @@ def rate(update, context):  # TODO: сделать restricted декоратор
                     if participant['id'] not in rated_participants}
 
     context.user_data['participants'] = participants
-    participant_choices = [[str(participant)] for participant in participants.keys()]
+    participant_choices = make_participant_choices(participants, 3)
 
     update.message.reply_text(
         'Вы собираетесь оценить участника.\n'
@@ -167,6 +183,11 @@ def shape(update, context):
     return ConversationHandler.END
 
 
+def cancel(update, context):
+    update.message.reply_markdown('Вы отменили оценку участника.', reply_markup=ReplyKeyboardRemove())
+    return ConversationHandler.END
+
+
 rateConversationHandler = ConversationHandler(
     entry_points=[CommandHandler('rate', rate)],
 
@@ -177,5 +198,5 @@ rateConversationHandler = ConversationHandler(
         SHAPE: [MessageHandler(Filters.regex(r'\d+'), shape)],
     },
 
-    fallbacks=[]
+    fallbacks=[CommandHandler('cancel', cancel)]
 )
