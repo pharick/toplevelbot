@@ -2,7 +2,7 @@ import requests
 
 
 class Api:
-    url_base = 'http://django:8000/api/'
+    url_base = 'http://backend:8000/api/'
 
     headers = {
         'Content-Type': 'application/json',
