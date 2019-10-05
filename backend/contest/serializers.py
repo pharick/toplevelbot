@@ -17,17 +17,20 @@ class ParticipantSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_average_marks(self, obj):
-        sums, counts = dict(), dict()
+        sums = {
+            'beauty': 0,
+            'color': 0,
+            'shape': 0,
+        }
+
+        count = 0
 
         for rating in Rating.objects.filter(participant=obj.id):
             for mark in rating.marks:
                 sums[mark] = sums.get(mark, 0) + int(rating.marks[mark])
-                counts[mark] = counts.get(mark, 0) + 1
+            count += 1
 
-        average_marks = dict()
-
-        for mark in sums:
-            average_marks[mark] = sums[mark] / counts[mark]
+        average_marks = {mark: 0 if count == 0 else sums[mark] / count for mark in sums}
 
         return average_marks
 
