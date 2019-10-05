@@ -1,6 +1,16 @@
 version: '3'
 
 services:
+  nginx:
+    build: ./nginx
+    ports:
+      - "80:80"
+    volumes:
+      - static_files:/usr/src/app/staticfiles
+      - media_files:/usr/src/app/mediafiles
+    depends_on:
+      - backend
+
   db:
     build: ./db
     volumes:
@@ -10,13 +20,17 @@ services:
       - POSTGRES_PASSWORD=toplevel
       - POSTGRES_DB=toplevel
 
-  django:
+  backend:
     build: ./backend
-    command: bash -c "python manage.py makemigrations && python manage.py migrate && python manage.py runserver 0.0.0.0:8000"
+    command: bash -c "python manage.py makemigrations &&
+                      python manage.py migrate &&
+                      python manage.py collectstatic --no-input --clear &&
+                      gunicorn toplevel.wsgi:application --bind 0.0.0.0:8000"
     volumes:
-      - ./backend:/code
-    ports:
-      - "8000:8000"
+      - static_files:/usr/src/app/staticfiles
+      - media_files:/usr/src/app/mediafiles
+    expose:
+      - "8000"
     environment:
       - DEBUG=1
       - SECRET_KEY=94c7xjmgahwnfr+-f0@loe-4p3ahen0^n=jde^#ua3u)2(3(qj
@@ -33,7 +47,9 @@ services:
     build: ./bot
     command: bash -c "python start.py"
     depends_on:
-      - django
+      - backend
 
 volumes:
   postgres_data:
+  static_files:
+  media_files:
