@@ -92,7 +92,7 @@ class ParticipantsTable extends Component {
     }
 
     async get_participants() {
-        const participants_response = await fetch('http://localhost/api/participants/');
+        const participants_response = await fetch('http://157.230.105.46/api/participants/');
         let participants = await participants_response.json();
 
         participants = participants.map(participant => {
