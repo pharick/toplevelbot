@@ -8,8 +8,10 @@ services:
     volumes:
       - static_files:/usr/src/app/staticfiles
       - media_files:/usr/src/app/mediafiles
+      - monitor_build:/usr/src/app/monitor
     depends_on:
       - backend
+      - monitor
 
   db:
     build: ./db
@@ -49,7 +51,15 @@ services:
     depends_on:
       - backend
 
+  monitor:
+    build: ./monitor
+    volumes:
+      - monitor_build:/usr/src/app/build
+    depends_on:
+      - backend
+
 volumes:
   postgres_data:
   static_files:
   media_files:
+  monitor_build:

@@ -73,7 +73,7 @@ const Participant = ({ participant }) => (
 
                 <ParticipantMark total>
                     <p className="mark_value">
-                        {Object.values(participant.average_marks).reduce((sum, n) => (sum + n))}
+                        {participant.total}
                     </p>
                     <p className="mark_label">Итого</p>
                 </ParticipantMark>
@@ -92,8 +92,14 @@ class ParticipantsTable extends Component {
     }
 
     async get_participants() {
-        const participants_response = await fetch('http://localhost/api/participants');
-        const participants = await participants_response.json();
+        const participants_response = await fetch('http://localhost/api/participants/');
+        let participants = await participants_response.json();
+
+        participants = participants.map(participant => {
+            participant.total = Object.values(participant.average_marks).reduce((sum, n) => (sum + n));
+            return participant;
+        });
+
 
         participants.sort(this.compare_participants);
         this.setState({ participants });
