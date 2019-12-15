@@ -5,7 +5,7 @@ from bot.conversation_handlers import rateConversationHandler
 
 
 def main():
-    token = '881682371:AAE6aXri7GrTvdIxkUf2e7Ii98xtVzNgnu0'
+    token = ''
 
     bot = Bot(token)
 
