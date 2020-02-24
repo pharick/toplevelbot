@@ -36,7 +36,7 @@ services:
     environment:
       - DEBUG=1
       - SECRET_KEY=tu8&gqf87r#p8ilm95tayfzh7h39y)t!t2bori2+#r*@p_pl4&
-      - SQL_ENGINE=django.db.backends.postgresql_psycopg2
+      - SQL_ENGINE=django.db.backends.postgresql
       - SQL_DATABASE=toplevel
       - SQL_USER=toplevel
       - SQL_PASSWORD=toplevel

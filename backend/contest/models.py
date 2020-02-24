@@ -1,5 +1,6 @@
 from django.db import models
-from django.contrib.postgres.fields import HStoreField
+from django.contrib.postgres.fields import ArrayField
+from django.core.validators import MinValueValidator, MaxValueValidator
 
 
 class Judge(models.Model):
@@ -25,7 +26,7 @@ class Participant(models.Model):
 class Rating(models.Model):
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
     judge = models.ForeignKey(Judge, on_delete=models.CASCADE)
-    marks = HStoreField()
+    marks = ArrayField(models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)]))
 
 
 class ParticipantSession(models.Model):

@@ -4,17 +4,28 @@ from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, Fi
 from ..api import Api
 from ..settings import separator
 
-NUMBER, BEAUTY, COLOR, SHAPE = range(4)
+lips_criteria = [
+    'Общее впечатление',
+    'Гармоничность формы',
+    'Симметрия',
+    'Выбор цвета',
+    'Насыщенность',
+    'Оформление контура',
+    'Равномерность покраса',
+    'Оформление уголков',
+    'Глубина введения пигмента',
+    'Травматичность'
+]
+
+NUMBER, CRITERION, RESUME = range(3)
+
 marks_choices = [['0', '1', '2'],
                  ['3', '4', '5'],
-                 ['6', '7', '8'],
-                 ['9', '10', '/cancel']]
-
-mark_range_reply = 'Оценка дожна быть от 0 до 10. Пожалуйста, запустите команду /rate заново.'
+                 ['/cancel']]
 
 
 def check_mark(mark):
-    return 10 >= mark >= 0
+    return 5 >= mark >= 0
 
 
 def make_participant_choices(participants, line_len):
@@ -51,22 +62,24 @@ def send_participant_notification(bot, participant_id, judge_name, marks):
 
 
 def rate(update, context):
+    # Проверяем, что пользователь является судьей
     if not context.user_data['is_judge']:
         return ConversationHandler.END
 
+    # Подгружаем уже выставленные судьей оценки
     judge = context.user_data['judge']
     participants = Api.get('participants').json()
     ratings = Api.get('ratings', {'judge': judge['id']}).json()
 
+    # Формируем список еще не оцененных участников
     rated_participants = [rating['participant'] for rating in ratings]
     participants = {participant['number']: participant for participant in participants
                     if participant['id'] not in rated_participants}
-
     context.user_data['participants'] = participants
 
+    # Проверяем, остались ли участники для оценки
     if len(participants) == 0:
-        update.message.reply_text('В базе нет ни одного участника.')
-
+        update.message.reply_text('Похоже вы уже оценили всех участников.')
         return ConversationHandler.END
 
     participant_choices = make_participant_choices(participants, 3)
@@ -94,75 +107,59 @@ def number(update, context):
         return ConversationHandler.END
 
     context.chat_data['participant'] = participants[participant_number]
-    context.chat_data['marks'] = {}
+    context.chat_data['marks'] = []
 
     update.message.reply_markdown(
         f'*Оцениваем участника #{participant_number}*\n'
         f'{separator}\n'
-        'Оцените красоту.',
+        f'Оцените критерий *{lips_criteria[0]}*.',
         reply_markup=ReplyKeyboardMarkup(marks_choices)
     )
 
-    return BEAUTY
+    return CRITERION
 
 
-def beauty(update, context):
+def criterion(update, context):
     mark = int(update.message.text)
 
     if not check_mark(mark):
-        update.message.reply_text(mark_range_reply)
-        return ConversationHandler.END
+        update.message.reply_text('Оценка дожна быть от 0 до 5. Пожалуйста, выберите оценку заного.')
+        return CRITERION
 
     participant = context.chat_data['participant']
     marks = context.chat_data['marks']
-    marks['beauty'] = mark
+    marks.append(mark)
+
+    message = f'*Оцениваем участника #{participant["number"]}*\n' \
+              f'{separator}\n'
+
+    for i in range(len(marks)):
+        message += f'*{lips_criteria[i]}:* {marks[i]}\n'
+
+    message += f'{separator}\n' \
+               f'Оцените критерий *{lips_criteria[len(marks)]}*.'
 
     update.message.reply_markdown(
-        f'*Оцениваем участника #{participant["number"]}*\n'
-        f'{separator}\n'
-        f'*Красота:* {marks["beauty"]}\n'
-        f'{separator}\n'
-        'Оцените цвет.',
+        message,
         reply_markup=ReplyKeyboardMarkup(marks_choices)
     )
 
-    return COLOR
+    if len(marks) == len(lips_criteria) - 1:
+        return RESUME
+
+    return CRITERION
 
 
-def color(update, context):
+def resume(update, context):
     mark = int(update.message.text)
 
     if not check_mark(mark):
-        update.message.reply_text(mark_range_reply)
-        return ConversationHandler.END
+        update.message.reply_text('Оценка дожна быть от 0 до 5. Пожалуйста, выберите оценку заного.')
+        return RESUME
 
     participant = context.chat_data['participant']
     marks = context.chat_data['marks']
-    marks['color'] = mark
-
-    update.message.reply_markdown(
-        f'*Оцениваем участника #{participant["number"]}*\n'
-        f'{separator}\n'
-        f'*Красота:* {marks["beauty"]}\n'
-        f'*Цвет:* {marks["color"]}\n'
-        f'{separator}\n'
-        'Оцените форму.',
-        reply_markup=ReplyKeyboardMarkup(marks_choices)
-    )
-
-    return SHAPE
-
-
-def shape(update, context):
-    mark = int(update.message.text)
-
-    if not check_mark(mark):
-        update.message.reply_text(mark_range_reply)
-        return ConversationHandler.END
-
-    participant = context.chat_data['participant']
-    marks = context.chat_data['marks']
-    marks['shape'] = mark
+    marks.append(mark)
 
     judge = context.user_data['judge']
 
@@ -174,17 +171,19 @@ def shape(update, context):
 
     Api.post('ratings', rating)
 
+    message = f'*Вы оценили участника #{participant["number"]}*\n' \
+              f'{separator}\n'
+
+    for i in range(len(marks)):
+        message += f'*{lips_criteria[i]}:* {marks[i]}\n'
+
     update.message.reply_markdown(
-        f'*Вы оценили участника #{participant["number"]}*\n'
-        f'{separator}\n'
-        f'*Красота:* {marks["beauty"]}\n'
-        f'*Цвет:* {marks["color"]}\n'
-        f'*Форма:* {marks["shape"]}\n',
+        message,
         reply_markup=ReplyKeyboardRemove()
     )
 
-    judge_name = f'{judge["first_name"]} {judge["last_name"]}'
-    send_participant_notification(context.bot, participant['id'], judge_name, marks)
+    # judge_name = f'{judge["first_name"]} {judge["last_name"]}'
+    # send_participant_notification(context.bot, participant['id'], judge_name, marks)
 
     return ConversationHandler.END
 
@@ -199,9 +198,8 @@ rateConversationHandler = ConversationHandler(
 
     states={
         NUMBER: [MessageHandler(Filters.regex(r'\d+'), number)],
-        BEAUTY: [MessageHandler(Filters.regex(r'\d+'), beauty)],
-        COLOR: [MessageHandler(Filters.regex(r'\d+'), color)],
-        SHAPE: [MessageHandler(Filters.regex(r'\d+'), shape)],
+        CRITERION: [MessageHandler(Filters.regex(r'\d+'), criterion)],
+        RESUME: [MessageHandler(Filters.regex(r'\d+'), resume)]
     },
 
     fallbacks=[CommandHandler('cancel', cancel)]
