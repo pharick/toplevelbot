@@ -63,6 +63,12 @@ def rate(update, context):
                     if participant['id'] not in rated_participants}
 
     context.user_data['participants'] = participants
+
+    if len(participants) == 0:
+        update.message.reply_text('В базе нет ни одного участника.')
+
+        return ConversationHandler.END
+
     participant_choices = make_participant_choices(participants, 3)
 
     update.message.reply_text(
