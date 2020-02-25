@@ -20,7 +20,7 @@ class ParticipantViewSet(viewsets.ReadOnlyModelViewSet):
 class RatingViewSet(viewsets.ModelViewSet):
     serializer_class = RatingSerializer
     queryset = Rating.objects.all()
-    filterset_fields = ['judge']
+    filterset_fields = ['judge', 'category']
 
 
 class ParticipantSessionViewSet(viewsets.ModelViewSet):

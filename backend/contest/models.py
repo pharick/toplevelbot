@@ -26,6 +26,14 @@ class Participant(models.Model):
 class Rating(models.Model):
     participant = models.ForeignKey(Participant, on_delete=models.CASCADE)
     judge = models.ForeignKey(Judge, on_delete=models.CASCADE)
+
+    CATEGORY_CHOICES = [
+        (0, 'Акварельные губы'),
+        (1, 'Веки с растушевкой'),
+        (2, 'Пудровые брови')
+    ]
+    category = models.PositiveSmallIntegerField(choices=CATEGORY_CHOICES)
+
     marks = ArrayField(models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)]))
 
 

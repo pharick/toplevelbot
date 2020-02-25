@@ -1,9 +1,12 @@
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode
-from telegram.ext import CommandHandler, ConversationHandler, MessageHandler, Filters
+from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
 
 from ..api import Api
 from ..settings import separator
 
+LIPS, EYELIDS, EYEBROWS = range(3)  # Номинации
+
+# Критерии для номинации ГУБЫ
 lips_criteria = [
     'Общее впечатление',
     'Гармоничность формы',
@@ -17,17 +20,55 @@ lips_criteria = [
     'Травматичность'
 ]
 
-NUMBER, CRITERION, RESUME = range(3)
+# Критерии для номинации РЕСНИЦЫ
+eyelids_criteria = [
+    'Выбор техники стрелки с растушёвкой',
+    'Гармоничность формы',
+    'Симметрия',
+    'Заполнение межресничного пространства',
+    'Равномерность и четкость прокраса стрелок',
+    'Качество прокраса внутреннего уголка глаза',
+    'Качество прокраса внешнего уголка глаза',
+    'Глубина введения пигмента',
+    'Градиент',
+    'Травматичность'
+]
 
-marks_choices = [['0', '1', '2'],
-                 ['3', '4', '5'],
-                 ['/cancel']]
+# Критерии для номинации БРОВИ
+eyebrows_criteria = [
+    'Выбор техники',
+    'Гармоничность формы',
+    'Симметрия',
+    'Заполнение головки брови',
+    'Заполнение верха тела брови',
+    'Заполнение нижней части тела брови',
+    'Заполнение хвоста брови',
+    'Равномерность прокраса брови',
+    'Градиент',
+    'Травматичность'
+]
+
+CATEGORY, NUMBER, CRITERION, RESUME = range(4)  # Стадии оценки
 
 
+# Клавиатура для выбора оценки
+marks_choices = [
+    [InlineKeyboardButton('0', callback_data='0'),
+     InlineKeyboardButton('1', callback_data='1'),
+     InlineKeyboardButton('2', callback_data='2')],
+    [InlineKeyboardButton('3', callback_data='3'),
+     InlineKeyboardButton('4', callback_data='4'),
+     InlineKeyboardButton('5', callback_data='5')],
+    [InlineKeyboardButton('Отмена', callback_data='CANCEL')]
+]
+
+
+# Проверка диапазона оценки
 def check_mark(mark):
     return 5 >= mark >= 0
 
 
+# Компоновка клавиатуры для выбора участника
 def make_participant_choices(participants, line_len):
     count = 0
     line = -1
@@ -38,12 +79,13 @@ def make_participant_choices(participants, line_len):
             line += 1
             participant_choices.append([])
 
-        participant_choices[line].append(str(participant))
+        participant_choices[line].append(InlineKeyboardButton(participant, callback_data=str(participant)))
         count += 1
 
-    return participant_choices
+    return InlineKeyboardMarkup(participant_choices)
 
 
+# Отправка уведомления об оценке участнику
 def send_participant_notification(bot, participant_id, judge_name, marks):
     participant_session = Api.get(f'participant-sessions/{participant_id}')
 
@@ -61,12 +103,31 @@ def send_participant_notification(bot, participant_id, judge_name, marks):
     bot.send_message(chat_id, participant_notification_message, ParseMode.MARKDOWN)
 
 
+# 1. Начальная стадия
 def rate(update, context):
     # Проверяем, что пользователь является судьей
     if not context.user_data['is_judge']:
         return ConversationHandler.END
 
-    # Подгружаем уже выставленные судьей оценки
+    # Формируем клавиатуру для выбора номинации
+    category_choices = InlineKeyboardMarkup([
+        [InlineKeyboardButton('Акварельные губы', callback_data='0')],
+        [InlineKeyboardButton('Веки с растушевкой', callback_data='1')],
+        [InlineKeyboardButton('Пудровые брови', callback_data='2')]
+    ])
+
+    update.message.reply_markdown(
+        'Выберите номинацию для оценки.',
+        reply_markup=category_choices
+    )
+
+    return CATEGORY
+
+
+def category(update, context):
+    query = update.callback_query
+
+    # Подгружаем список участников и уже выставленные судьей оценки
     judge = context.user_data['judge']
     participants = Api.get('participants').json()
     ratings = Api.get('ratings', {'judge': judge['id']}).json()
@@ -79,29 +140,30 @@ def rate(update, context):
 
     # Проверяем, остались ли участники для оценки
     if len(participants) == 0:
-        update.message.reply_text('Похоже вы уже оценили всех участников.')
+        query.edit_message_text(text='Похоже вы уже оценили всех участников в этой номинации.')
         return ConversationHandler.END
 
+    # Формируем клавиатуру для выбора участника
     participant_choices = make_participant_choices(participants, 3)
 
-    update.message.reply_text(
-        'Вы собираетесь оценить участника.\n'
-        'Сначала выберите его номер.',
-        reply_markup=ReplyKeyboardMarkup(participant_choices, one_time_keyboard=True)
+    query.edit_message_text(
+        text='Выберите номер участника для оценки.',
+        reply_markup=participant_choices
     )
 
     return NUMBER
 
 
 def number(update, context):
+    query = update.callback_query
+
     participants = context.user_data['participants']
-    participant_number = int(update.message.text)
+    participant_number = int(query.data)
 
     if participant_number not in participants.keys():
-        update.message.reply_text(
-            f'Участника #{participant_number} нет или вы уже оценили его.\n'
-            'Пожалуйста, запустите команду /rate заново.',
-            reply_markup=ReplyKeyboardRemove()
+        query.edit_message_text(
+            f'Участника #{participant_number} нет или вы уже оценили его в этой номинации.\n'
+            'Пожалуйста, запустите команду /rate заново.'
         )
 
         return ConversationHandler.END
@@ -109,21 +171,28 @@ def number(update, context):
     context.chat_data['participant'] = participants[participant_number]
     context.chat_data['marks'] = []
 
-    update.message.reply_markdown(
+    query.edit_message_text(
         f'*Оцениваем участника #{participant_number}*\n'
         f'{separator}\n'
         f'Оцените критерий *{lips_criteria[0]}*.',
-        reply_markup=ReplyKeyboardMarkup(marks_choices)
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=InlineKeyboardMarkup(marks_choices)
     )
 
     return CRITERION
 
 
 def criterion(update, context):
-    mark = int(update.message.text)
+    query = update.callback_query
+
+    mark = int(query.data)
 
     if not check_mark(mark):
-        update.message.reply_text('Оценка дожна быть от 0 до 5. Пожалуйста, выберите оценку заного.')
+        query.edit_message_text(
+            'Оценка дожна быть от 0 до 5. Пожалуйста, выберите оценку заного.',
+            reply_markup=InlineKeyboardMarkup(marks_choices)
+        )
+
         return CRITERION
 
     participant = context.chat_data['participant']
@@ -139,9 +208,10 @@ def criterion(update, context):
     message += f'{separator}\n' \
                f'Оцените критерий *{lips_criteria[len(marks)]}*.'
 
-    update.message.reply_markdown(
+    query.edit_message_text(
         message,
-        reply_markup=ReplyKeyboardMarkup(marks_choices)
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=InlineKeyboardMarkup(marks_choices)
     )
 
     if len(marks) == len(lips_criteria) - 1:
@@ -151,7 +221,8 @@ def criterion(update, context):
 
 
 def resume(update, context):
-    mark = int(update.message.text)
+    query = update.callback_query
+    mark = int(query.data)
 
     if not check_mark(mark):
         update.message.reply_text('Оценка дожна быть от 0 до 5. Пожалуйста, выберите оценку заного.')
@@ -177,9 +248,9 @@ def resume(update, context):
     for i in range(len(marks)):
         message += f'*{lips_criteria[i]}:* {marks[i]}\n'
 
-    update.message.reply_markdown(
+    query.edit_message_text(
         message,
-        reply_markup=ReplyKeyboardRemove()
+        parse_mode=ParseMode.MARKDOWN
     )
 
     # judge_name = f'{judge["first_name"]} {judge["last_name"]}'
@@ -189,7 +260,8 @@ def resume(update, context):
 
 
 def cancel(update, context):
-    update.message.reply_markdown('Вы отменили оценку участника.', reply_markup=ReplyKeyboardRemove())
+    query = update.callback_query
+    query.edit_message_text('Вы отменили оценку участника.', reply_markup=ReplyKeyboardRemove())
     return ConversationHandler.END
 
 
@@ -197,10 +269,11 @@ rateConversationHandler = ConversationHandler(
     entry_points=[CommandHandler('rate', rate)],
 
     states={
-        NUMBER: [MessageHandler(Filters.regex(r'\d+'), number)],
-        CRITERION: [MessageHandler(Filters.regex(r'\d+'), criterion)],
-        RESUME: [MessageHandler(Filters.regex(r'\d+'), resume)]
+        CATEGORY: [CallbackQueryHandler(category, pattern=r'\d+')],
+        NUMBER: [CallbackQueryHandler(number, pattern=r'\d+')],
+        CRITERION: [CallbackQueryHandler(criterion, pattern=r'\d+')],
+        RESUME: [CallbackQueryHandler(resume, pattern=r'\d+')]
     },
 
-    fallbacks=[CommandHandler('cancel', cancel)]
+    fallbacks=[CallbackQueryHandler(cancel, pattern=r'^CANCEL$')]
 )
