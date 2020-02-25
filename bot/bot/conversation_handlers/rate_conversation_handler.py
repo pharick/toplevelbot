@@ -22,7 +22,7 @@ lips_criteria = [
 
 # Критерии для номинации РЕСНИЦЫ
 eyelids_criteria = [
-    'Выбор техники стрелки с растушёвкой',
+    'Выбор техники',
     'Гармоничность формы',
     'Симметрия',
     'Заполнение межресничного пространства',
@@ -127,10 +127,20 @@ def rate(update, context):
 def category(update, context):
     query = update.callback_query
 
+    category_number = int(query.data)
+    context.chat_data['category'] = category_number
+
+    if category_number == LIPS:
+        context.chat_data['criteria'] = lips_criteria
+    elif category_number == EYELIDS:
+        context.chat_data['criteria'] = eyelids_criteria
+    else:
+        context.chat_data['criteria'] = eyebrows_criteria
+
     # Подгружаем список участников и уже выставленные судьей оценки
     judge = context.user_data['judge']
     participants = Api.get('participants').json()
-    ratings = Api.get('ratings', {'judge': judge['id']}).json()
+    ratings = Api.get('ratings', {'judge': judge['id'], 'category': category_number}).json()
 
     # Формируем список еще не оцененных участников
     rated_participants = [rating['participant'] for rating in ratings]
@@ -171,10 +181,12 @@ def number(update, context):
     context.chat_data['participant'] = participants[participant_number]
     context.chat_data['marks'] = []
 
+    criteria = context.chat_data['criteria']
+
     query.edit_message_text(
         f'*Оцениваем участника #{participant_number}*\n'
         f'{separator}\n'
-        f'Оцените критерий *{lips_criteria[0]}*.',
+        f'Оцените критерий *{criteria[0]}*.',
         parse_mode=ParseMode.MARKDOWN,
         reply_markup=InlineKeyboardMarkup(marks_choices)
     )
@@ -199,14 +211,16 @@ def criterion(update, context):
     marks = context.chat_data['marks']
     marks.append(mark)
 
+    criteria = context.chat_data['criteria']
+
     message = f'*Оцениваем участника #{participant["number"]}*\n' \
               f'{separator}\n'
 
     for i in range(len(marks)):
-        message += f'*{lips_criteria[i]}:* {marks[i]}\n'
+        message += f'*{criteria[i]}:* {marks[i]}\n'
 
     message += f'{separator}\n' \
-               f'Оцените критерий *{lips_criteria[len(marks)]}*.'
+               f'Оцените критерий *{criteria[len(marks)]}*.'
 
     query.edit_message_text(
         message,
@@ -233,8 +247,10 @@ def resume(update, context):
     marks.append(mark)
 
     judge = context.user_data['judge']
+    category_number = context.chat_data['category']
 
     rating = {
+        'category': category_number,
         'participant': participant['id'],
         'judge': judge['id'],
         'marks': marks,
@@ -242,11 +258,13 @@ def resume(update, context):
 
     Api.post('ratings', rating)
 
+    criteria = context.chat_data['criteria']
+
     message = f'*Вы оценили участника #{participant["number"]}*\n' \
               f'{separator}\n'
 
     for i in range(len(marks)):
-        message += f'*{lips_criteria[i]}:* {marks[i]}\n'
+        message += f'*{criteria[i]}:* {marks[i]}\n'
 
     query.edit_message_text(
         message,
@@ -261,7 +279,7 @@ def resume(update, context):
 
 def cancel(update, context):
     query = update.callback_query
-    query.edit_message_text('Вы отменили оценку участника.', reply_markup=ReplyKeyboardRemove())
+    query.edit_message_text('Вы отменили оценку участника.')
     return ConversationHandler.END
 
 
