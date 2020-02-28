@@ -19,6 +19,15 @@ class Participant(models.Model):
     photo = models.ImageField(upload_to='photos')
     number = models.PositiveIntegerField(unique=True)
 
+    photo_lips_before = models.ImageField(upload_to='photos', blank=True)
+    photo_lips_after = models.ImageField(upload_to='photos', blank=True)
+
+    photo_eyelids_before = models.ImageField(upload_to='photos', blank=True)
+    photo_eyelids_after = models.ImageField(upload_to='photos', blank=True)
+
+    photo_eyebrows_before = models.ImageField(upload_to='photos', blank=True)
+    photo_eyebrows_after = models.ImageField(upload_to='photos', blank=True)
+
     def __str__(self):
         return '{} {}'.format(self.first_name, self.last_name)
 
@@ -35,6 +44,9 @@ class Rating(models.Model):
     category = models.PositiveSmallIntegerField(choices=CATEGORY_CHOICES)
 
     marks = ArrayField(models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)]))
+
+    def __str__(self):
+        return 'Категория: {}; Судья: {}; Участник: {}'.format(self.category, self.judge, self.participant)
 
 
 class ParticipantSession(models.Model):
