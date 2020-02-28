@@ -1,10 +1,14 @@
-from telegram import ReplyKeyboardMarkup, ReplyKeyboardRemove, ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
+from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
+from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler
 
 from ..api import Api
 from ..settings import separator
 
-LIPS, EYELIDS, EYEBROWS = range(3)  # Номинации
+CATEGORY, NUMBER, CRITERION, RESUME = range(4)  # Стадии оценки
+
+# Номинации
+LIPS, EYELIDS, EYEBROWS = range(3)
+category_names = {LIPS: 'Акварельные губы', EYELIDS: 'Веки с растушевкой', EYEBROWS: 'Пудровые брови'}
 
 # Критерии для номинации ГУБЫ
 lips_criteria = [
@@ -48,9 +52,6 @@ eyebrows_criteria = [
     'Травматичность'
 ]
 
-CATEGORY, NUMBER, CRITERION, RESUME = range(4)  # Стадии оценки
-
-
 # Клавиатура для выбора оценки
 marks_choices = [
     [InlineKeyboardButton('0', callback_data='0'),
@@ -86,7 +87,7 @@ def make_participant_choices(participants, line_len):
 
 
 # Отправка уведомления об оценке участнику
-def send_participant_notification(bot, participant_id, judge_name, marks):
+def send_participant_notification(bot, participant_id, judge_name, category_number, criteria, marks):
     participant_session = Api.get(f'participant-sessions/{participant_id}')
 
     if participant_session.status_code != 200:
@@ -94,13 +95,13 @@ def send_participant_notification(bot, participant_id, judge_name, marks):
 
     chat_id = participant_session.json()['chat_id']
 
-    participant_notification_message = f'Вас оценил судья {judge_name}.\n' \
-                                       f'{separator}\n' \
-                                       f'*Красота:* {marks["beauty"]}\n' \
-                                       f'*Цвет:* {marks["color"]}\n' \
-                                       f'*Форма:* {marks["shape"]}\n'
+    message = f'Вас оценил судья {judge_name} в категории *{category_names[category_number]}*\n' \
+                                       f'{separator}\n'
 
-    bot.send_message(chat_id, participant_notification_message, ParseMode.MARKDOWN)
+    for i in range(len(marks)):
+        message += f'*{criteria[i]}:* {marks[i]}\n'
+
+    bot.send_message(chat_id, message, ParseMode.MARKDOWN)
 
 
 # 1. Начальная стадия
@@ -170,21 +171,15 @@ def number(update, context):
     participants = context.user_data['participants']
     participant_number = int(query.data)
 
-    if participant_number not in participants.keys():
-        query.edit_message_text(
-            f'Участника #{participant_number} нет или вы уже оценили его в этой номинации.\n'
-            'Пожалуйста, запустите команду /rate заново.'
-        )
-
-        return ConversationHandler.END
-
     context.chat_data['participant'] = participants[participant_number]
     context.chat_data['marks'] = []
 
+    category_number = context.chat_data['category']
     criteria = context.chat_data['criteria']
 
     query.edit_message_text(
-        f'*Оцениваем участника #{participant_number}*\n'
+        f'Категория *{category_names[category_number]}*\n'
+        f'Оцениваем участника *#{participant_number}*\n'
         f'{separator}\n'
         f'Оцените критерий *{criteria[0]}*.',
         parse_mode=ParseMode.MARKDOWN,
@@ -199,21 +194,15 @@ def criterion(update, context):
 
     mark = int(query.data)
 
-    if not check_mark(mark):
-        query.edit_message_text(
-            'Оценка дожна быть от 0 до 5. Пожалуйста, выберите оценку заного.',
-            reply_markup=InlineKeyboardMarkup(marks_choices)
-        )
-
-        return CRITERION
-
     participant = context.chat_data['participant']
     marks = context.chat_data['marks']
     marks.append(mark)
 
+    category_number = context.chat_data['category']
     criteria = context.chat_data['criteria']
 
-    message = f'*Оцениваем участника #{participant["number"]}*\n' \
+    message = f'Категория *{category_names[category_number]}*\n'\
+              f'*Оцениваем участника #{participant["number"]}*\n' \
               f'{separator}\n'
 
     for i in range(len(marks)):
@@ -238,10 +227,6 @@ def resume(update, context):
     query = update.callback_query
     mark = int(query.data)
 
-    if not check_mark(mark):
-        update.message.reply_text('Оценка дожна быть от 0 до 5. Пожалуйста, выберите оценку заного.')
-        return RESUME
-
     participant = context.chat_data['participant']
     marks = context.chat_data['marks']
     marks.append(mark)
@@ -260,7 +245,8 @@ def resume(update, context):
 
     criteria = context.chat_data['criteria']
 
-    message = f'*Вы оценили участника #{participant["number"]}*\n' \
+    message = f'Категория *{category_names[category_number]}*\n'\
+              f'*Вы оценили участника #{participant["number"]}*\n' \
               f'{separator}\n'
 
     for i in range(len(marks)):
@@ -271,8 +257,8 @@ def resume(update, context):
         parse_mode=ParseMode.MARKDOWN
     )
 
-    # judge_name = f'{judge["first_name"]} {judge["last_name"]}'
-    # send_participant_notification(context.bot, participant['id'], judge_name, marks)
+    judge_name = f'{judge["first_name"]} {judge["last_name"]}'
+    send_participant_notification(context.bot, participant['id'], judge_name, category_number, criteria, marks)
 
     return ConversationHandler.END
 
