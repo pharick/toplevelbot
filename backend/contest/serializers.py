@@ -10,29 +10,23 @@ class JudgeSerializer(serializers.ModelSerializer):
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
-    # average_marks = serializers.SerializerMethodField()
+    total_marks = serializers.SerializerMethodField()
 
     class Meta:
         model = Participant
         fields = '__all__'
 
-    # def get_average_marks(self, obj):
-    #     sums = {
-    #         'beauty': 0,
-    #         'color': 0,
-    #         'shape': 0,
-    #     }
-    #
-    #     count = 0
-    #
-    #     for rating in Rating.objects.filter(participant=obj.id):
-    #         for mark in rating.marks:
-    #             sums[mark] = sums.get(mark, 0) + int(rating.marks[mark])
-    #         count += 1
-    #
-    #     average_marks = {mark: 0 if count == 0 else sums[mark] / count for mark in sums}
-    #
-    #     return average_marks
+    def get_total_marks(self, obj):
+        marks = {}
+
+        for category in range(3):
+            marks[category] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+
+            for rating in Rating.objects.filter(category=category, participant=obj.id):
+                for i in range(10):
+                    marks[category][i] += rating.marks[i]
+
+        return marks
 
 
 class RatingSerializer(serializers.ModelSerializer):
