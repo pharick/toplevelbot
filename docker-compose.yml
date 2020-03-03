@@ -11,7 +11,7 @@ services:
       - monitor_build:/usr/src/app/monitor
     depends_on:
       - backend
-      - monitor
+      # - monitor
 
   db:
     build: ./db
@@ -51,12 +51,12 @@ services:
     depends_on:
       - backend
 
-  monitor:
-    build: ./monitor
-    volumes:
-      - monitor_build:/usr/src/app/build
-    depends_on:
-      - backend
+  # monitor:
+  #   build: ./monitor
+  #   volumes:
+  #     - monitor_build:/usr/src/app/build
+  #   depends_on:
+  #     - backend
 
 volumes:
   postgres_data:
