@@ -1,6 +1,8 @@
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
 
+import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
+
 import ParticipantsTable from './components/ParticipantsTable';
 import bg from './bg.jpg';
 
@@ -25,7 +27,22 @@ function App() {
   return (
     <div className="App">
       <GlobalStyle/>
-      <ParticipantsTable/>
+
+      <Router>
+        <Switch>
+          <Route path="/lips">
+            <ParticipantsTable category={0}/>
+          </Route>
+
+          <Route path="/eyelids">
+            <ParticipantsTable category={1}/>
+          </Route>
+
+          <Route path="/eyebrows">
+            <ParticipantsTable category={2}/>
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }

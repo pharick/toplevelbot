@@ -144,7 +144,7 @@ const CriterionLabel = styled.p`
   }
 `;
 
-const Participant = ({ participant, i }) => (
+const Participant = ({ i, participant, category }) => (
   <ParticipantArticle>
       <ParticipantInfo>
           <ParticipantNumber>{i}</ParticipantNumber>
@@ -154,7 +154,7 @@ const Participant = ({ participant, i }) => (
       </ParticipantInfo>
 
       <ParticipantMarks>
-          {participant.total_marks[0].map((mark, i) => (
+          {participant.total_marks[category].map((mark, i) => (
             <ParticipantMark key={i}>
                 <MarkValue>{mark}</MarkValue>
                 <CriterionLabel>{criteria[0][i]}</CriterionLabel>
@@ -162,7 +162,7 @@ const Participant = ({ participant, i }) => (
           ))}
 
           <ParticipantMark total>
-              <MarkValue>{participant.total}</MarkValue>
+              <MarkValue>{participant.total_category[category]}</MarkValue>
               <CriterionLabel>Итого</CriterionLabel>
           </ParticipantMark>
       </ParticipantMarks>
@@ -183,7 +183,13 @@ class ParticipantsTable extends Component {
         let participants = await participants_response.json();
 
         participants = participants.map(participant => {
-            participant.total = participant.total_marks[0].reduce((sum, n) => (sum + n));
+            participant.total_category = [];
+            participant.total_category[0] = participant.total_marks[0].reduce((sum, n) => (sum + n));
+            participant.total_category[1] = participant.total_marks[1].reduce((sum, n) => (sum + n));
+            participant.total_category[2] = participant.total_marks[2].reduce((sum, n) => (sum + n));
+            participant.total = participant.total_category[0] +
+                                participant.total_category[1] +
+                                participant.total_category[2];
             return participant;
         });
 
@@ -200,7 +206,7 @@ class ParticipantsTable extends Component {
 
     componentDidMount() {
         this.get_participants();
-        // this.timer = setInterval(() => this.get_participants(), 10000)
+        this.timer = setInterval(() => this.get_participants(), 10000)
     }
 
     render() {
@@ -208,7 +214,7 @@ class ParticipantsTable extends Component {
           <Participants>
               {this.state.participants.map((participant, i) => (
                 <li key={participant.id}>
-                    <Participant participant={participant} i={i + 1}/>
+                    <Participant i={i + 1} participant={participant} category={this.props.category} />
                 </li>
               ))}
           </Participants>
