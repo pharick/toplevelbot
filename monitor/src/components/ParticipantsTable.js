@@ -3,15 +3,15 @@ import styled from 'styled-components';
 
 const criteria = {
     0: [
-        'Общее впечатление',
-        'Гармоничность формы',
+        'Впечатление',
+        'Форма',
         'Симметрия',
-        'Выбор цвета',
+        'Цвет',
         'Насыщенность',
-        'Оформление контура',
+        'Контур',
         'Равномерность покраса',
         'Оформление уголков',
-        'Глубина введения пигмента',
+        'Глубина пигмента',
         'Травматичность'
     ],
 
@@ -46,9 +46,8 @@ const Participants = styled.ol`
   list-style: none;
   padding: 0;
   
-  li {
+  li:not(:last-child) {
     border-bottom: 1px solid lightgrey;
-    padding: 1em 0;
   }
 `;
 
@@ -56,7 +55,7 @@ const ParticipantArticle = styled.article`
   display: flex;
   font-size: 2em;
   
-  @media(max-width: 1200px) {
+  @media(max-width: 840px) {
     flex-direction: column;
   }
 `;
@@ -66,6 +65,10 @@ const ParticipantInfo = styled.div`
   align-items: center;
   width: 400px;
   flex: none;
+  
+  @media(max-width: 840px) {
+    margin-top: 0.2em;
+  }
 `;
 
 const ParticipantNumber = styled.p`
@@ -78,7 +81,7 @@ const ParticipantNumber = styled.p`
 const ParticipantPhoto = styled.img`
   display: block;
   margin-right: 1em;
-  width: 100px;
+  width: 80px;
   flex: none;
 `;
 
@@ -93,21 +96,30 @@ const ParticipantMarks = styled.div`
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  margin-top: 0.5em;
+  margin: 0.2em 0;
   
-  @media(max-width: 800px) {
+  @media(max-width: 1700px) {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+  
+  @media(max-width: 840px) {
     flex-direction: column;
   }
 `;
 
-const ParticipantMark = styled.p`
+const ParticipantMark = styled.div`
   text-align: center;
   flex: 1;
   font-weight: ${props => props.total ? "bold" : "normal"};
-  margin: 0;
-  min-width: 70px;
+  min-width: 110px;
   
-  @media(max-width: 800px) {
+  @media(max-width: 1700px) {
+    flex: none;
+    margin: 0.2em;
+  }
+  
+  @media(max-width: 840px) {
     width: 100%;
     display: flex;
     align-items: center;
@@ -117,20 +129,16 @@ const ParticipantMark = styled.p`
 `;
 
 const MarkValue = styled.p`
-  font-size: 2em;
+  font-size: 1.3em;
   margin: 0;
 `;
 
 const CriterionLabel = styled.p`
   margin: 0;
   font-size: 0.5em;
-  //color: darkgray;
+  color: darkgray;
   
-  @media(max-width: 1900px) {
-    font-size: 0.3em;
-  }
-  
-  @media(max-width: 800px) {
+  @media(max-width: 840px) {
     font-size: 0.6em;
     margin-right: 1em;
   }
@@ -192,7 +200,7 @@ class ParticipantsTable extends Component {
 
     componentDidMount() {
         this.get_participants();
-        this.timer = setInterval(() => this.get_participants(), 10000)
+        // this.timer = setInterval(() => this.get_participants(), 10000)
     }
 
     render() {

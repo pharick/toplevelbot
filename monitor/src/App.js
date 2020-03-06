@@ -16,7 +16,7 @@ const GlobalStyle = createGlobalStyle`
     background-size: cover;
     background-attachment: fixed;
     background-position: center;
-    padding: 2em;
+    padding: 1em;
     color: white;
   }
 `;
