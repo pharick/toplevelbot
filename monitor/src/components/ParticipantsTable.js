@@ -101,7 +101,6 @@ const ParticipantMarksWrapper = styled.div`
   
   @media(max-width: 1700px) {
     flex-wrap: wrap;
-    justify-content: flex-start;
   }
   
   @media(max-width: 840px) {
@@ -114,11 +113,6 @@ const ParticipantMark = styled.div`
   flex: 1;
   font-weight: ${props => props.total ? "bold" : "normal"};
   min-width: 110px;
-  
-  @media(max-width: 1700px) {
-    flex: none;
-    margin: 0.2em;
-  }
   
   @media(max-width: 840px) {
     width: 100%;
