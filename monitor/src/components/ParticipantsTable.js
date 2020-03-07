@@ -2,6 +2,8 @@ import React, {Component} from 'react';
 import styled from 'styled-components';
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
+const categories = ['Акварельные губы', 'Веки с растушевкой', 'Пудровые брови'];
+
 const criteria = {
   0: [
     'Впечатление',
@@ -98,10 +100,7 @@ const ParticipantMarksWrapper = styled.div`
   justify-content: space-between;
   align-items: flex-start;
   margin: 0.2em 0;
-  
-  @media(max-width: 1700px) {
-    flex-wrap: wrap;
-  }
+  flex-wrap: wrap;
   
   @media(max-width: 840px) {
     flex-direction: column;
@@ -139,17 +138,18 @@ const CriterionLabel = styled.p`
   }
 `;
 
-const ParticipantMarks = ({category, marks}) => (
+const ParticipantMarks = ({criteria, marks, total}) => (
   <ParticipantMarksWrapper>
-    {marks.criteria.map((mark, i) => (
+    {console.log(criteria)}
+    {marks.map((mark, i) => (
       <ParticipantMark key={i}>
         <MarkValue>{mark}</MarkValue>
-        <CriterionLabel>{criteria[category][i]}</CriterionLabel>
+        <CriterionLabel>{criteria[i]}</CriterionLabel>
       </ParticipantMark>
     ))}
 
     <ParticipantMark total>
-      <MarkValue>{marks.total}</MarkValue>
+      <MarkValue>{total}</MarkValue>
       <CriterionLabel>Итого</CriterionLabel>
     </ParticipantMark>
   </ParticipantMarksWrapper>
@@ -167,15 +167,22 @@ const Participant = ({ i, participant, category }) => (
     <Router>
       <Switch>
         <Route path="/lips">
-          <ParticipantMarks category={0} marks={participant.marks[0]}/>
+          <ParticipantMarks criteria={criteria[0]} marks={participant.marks[0].criteria} total={participant.marks[0].total}/>
         </Route>
 
         <Route path="/eyelids">
-          <ParticipantMarks category={1} marks={participant.marks[1]}/>
+          <ParticipantMarks criteria={criteria[1]} marks={participant.marks[1].criteria} total={participant.marks[1].total}/>
         </Route>
 
         <Route path="/eyebrows">
-          <ParticipantMarks category={2} marks={participant.marks[2]}/>
+          <ParticipantMarks criteria={criteria[2]} marks={participant.marks[2].criteria} total={participant.marks[2].total}/>
+        </Route>
+
+        <Route path="/">
+          <ParticipantMarks
+            criteria={categories}
+            marks={[participant.marks[0].total, participant.marks[1].total, participant.marks[2].total]}
+            total={participant.marks.total}/>
         </Route>
       </Switch>
     </Router>
