@@ -10,21 +10,34 @@ class JudgeSerializer(serializers.ModelSerializer):
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
-    total_marks = serializers.SerializerMethodField()
+    marks = serializers.SerializerMethodField()
 
     class Meta:
         model = Participant
         fields = '__all__'
 
-    def get_total_marks(self, obj):
+    def get_marks(self, obj):
         marks = {}
 
+        total = 0
+
         for category in range(3):
-            marks[category] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+            marks[category] = {
+                'criteria': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                'total': 0
+            }
+
+            total_category = 0
 
             for rating in Rating.objects.filter(category=category, participant=obj.id):
                 for i in range(10):
-                    marks[category][i] += rating.marks[i]
+                    marks[category]['criteria'][i] += rating.marks[i]
+                    total_category += rating.marks[i]
+
+            marks[category]['total'] = total_category
+            total += total_category
+
+        marks['total'] = total
 
         return marks
 
