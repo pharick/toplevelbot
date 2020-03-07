@@ -1,45 +1,46 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 const criteria = {
-    0: [
-        'Впечатление',
-        'Форма',
-        'Симметрия',
-        'Цвет',
-        'Насыщенность',
-        'Контур',
-        'Равномерность покраса',
-        'Оформление уголков',
-        'Глубина пигмента',
-        'Травматичность'
-    ],
+  0: [
+    'Впечатление',
+    'Форма',
+    'Симметрия',
+    'Цвет',
+    'Насыщенность',
+    'Контур',
+    'Равномерность покраса',
+    'Оформление уголков',
+    'Глубина пигмента',
+    'Травматичность'
+  ],
 
-    1: [
-        'Выбор техники',
-        'Гармоничность формы',
-        'Симметрия',
-        'Заполнение межресничного пространства',
-        'Равномерность и четкость прокраса стрелок',
-        'Качество прокраса внутреннего уголка глаза',
-        'Качество прокраса внешнего уголка глаза',
-        'Глубина введения пигмента',
-        'Градиент',
-        'Травматичность'
-    ],
+  1: [
+    'Техника',
+    'Форма',
+    'Симметрия',
+    'Межресничное пространство',
+    'Прокрас стрелок',
+    'Внутренний уголок глаза',
+    'Внешний уголок глаза',
+    'Глубина пигмента',
+    'Градиент',
+    'Травматичность'
+  ],
 
-    2: [
-        'Выбор техники',
-        'Гармоничность формы',
-        'Симметрия',
-        'Заполнение головки брови',
-        'Заполнение верха тела брови',
-        'Заполнение нижней части тела брови',
-        'Заполнение хвоста брови',
-        'Равномерность прокраса брови',
-        'Градиент',
-        'Травматичность'
-    ]
+  2: [
+    'Техника',
+    'Форма',
+    'Симметрия',
+    'Головка брови',
+    'Верх тела брови',
+    'Низ тела брови',
+    'Хвост брови',
+    'Равномерность прокраса',
+    'Градиент',
+    'Травматичность'
+  ]
 };
 
 const Participants = styled.ol`
@@ -91,7 +92,7 @@ const ParticipantName = styled.p`
   margin: 0 1em 0 0;
 `;
 
-const ParticipantMarks = styled.div`
+const ParticipantMarksWrapper = styled.div`
   flex: 1;
   display: flex;
   justify-content: space-between;
@@ -144,82 +145,88 @@ const CriterionLabel = styled.p`
   }
 `;
 
+const ParticipantMarks = ({category, marks}) => (
+  <ParticipantMarksWrapper>
+    {marks.criteria.map((mark, i) => (
+      <ParticipantMark key={i}>
+        <MarkValue>{mark}</MarkValue>
+        <CriterionLabel>{criteria[category][i]}</CriterionLabel>
+      </ParticipantMark>
+    ))}
+
+    <ParticipantMark total>
+      <MarkValue>{marks.total}</MarkValue>
+      <CriterionLabel>Итого</CriterionLabel>
+    </ParticipantMark>
+  </ParticipantMarksWrapper>
+);
+
 const Participant = ({ i, participant, category }) => (
   <ParticipantArticle>
-      <ParticipantInfo>
-          <ParticipantNumber>{i}</ParticipantNumber>
+    <ParticipantInfo>
+      <ParticipantNumber>{i}</ParticipantNumber>
 
-          <ParticipantPhoto src={participant.photo} alt={`${participant.first_name} ${participant.last_name}`}/>
-          <ParticipantName>{participant.first_name} {participant.last_name}</ParticipantName>
-      </ParticipantInfo>
+      <ParticipantPhoto src={participant.photo} alt={`${participant.first_name} ${participant.last_name}`}/>
+      <ParticipantName>{participant.first_name} {participant.last_name}</ParticipantName>
+    </ParticipantInfo>
 
-      <ParticipantMarks>
-          {participant.total_marks[category].map((mark, i) => (
-            <ParticipantMark key={i}>
-                <MarkValue>{mark}</MarkValue>
-                <CriterionLabel>{criteria[0][i]}</CriterionLabel>
-            </ParticipantMark>
-          ))}
+    <Router>
+      <Switch>
+        <Route path="/lips">
+          <ParticipantMarks category={0} marks={participant.marks[0]}/>
+        </Route>
 
-          <ParticipantMark total>
-              <MarkValue>{participant.total_category[category]}</MarkValue>
-              <CriterionLabel>Итого</CriterionLabel>
-          </ParticipantMark>
-      </ParticipantMarks>
+        <Route path="/eyelids">
+          <ParticipantMarks category={1} marks={participant.marks[1]}/>
+        </Route>
+
+        <Route path="/eyebrows">
+          <ParticipantMarks category={2} marks={participant.marks[2]}/>
+        </Route>
+      </Switch>
+    </Router>
   </ParticipantArticle>
 );
 
 class ParticipantsTable extends Component {
-    constructor(props) {
-        super(props);
+  constructor(props) {
+    super(props);
 
-        this.state = {
-            participants: []
-        };
-    }
+    this.state = {
+      participants: []
+    };
+  }
 
-    async get_participants() {
-        const participants_response = await fetch('http://localhost/api/participants/');
-        let participants = await participants_response.json();
+  async get_participants() {
+    const participants_response = await fetch('http://localhost/api/participants/');
+    let participants = await participants_response.json();
 
-        participants = participants.map(participant => {
-            participant.total_category = [];
-            participant.total_category[0] = participant.total_marks[0].reduce((sum, n) => (sum + n));
-            participant.total_category[1] = participant.total_marks[1].reduce((sum, n) => (sum + n));
-            participant.total_category[2] = participant.total_marks[2].reduce((sum, n) => (sum + n));
-            participant.total = participant.total_category[0] +
-                                participant.total_category[1] +
-                                participant.total_category[2];
-            return participant;
-        });
+    participants.sort(this.compare_participants);
+    this.setState({ participants });
+  }
 
+  compare_participants(a, b) {
+    if (a.total > b.total) return -1;
+    if (a.total === b.total) return 0;
+    if (a.total < b.total) return 1;
+  }
 
-        participants.sort(this.compare_participants);
-        this.setState({ participants });
-    }
+  componentDidMount() {
+    this.get_participants();
+    this.timer = setInterval(() => this.get_participants(), 10000);
+  }
 
-    compare_participants(a, b) {
-        if (a.total > b.total) return -1;
-        if (a.total === b.total) return 0;
-        if (a.total < b.total) return 1;
-    }
-
-    componentDidMount() {
-        this.get_participants();
-        this.timer = setInterval(() => this.get_participants(), 10000)
-    }
-
-    render() {
-        return (
-          <Participants>
-              {this.state.participants.map((participant, i) => (
-                <li key={participant.id}>
-                    <Participant i={i + 1} participant={participant} category={this.props.category} />
-                </li>
-              ))}
-          </Participants>
-        );
-    }
+  render() {
+    return (
+      <Participants>
+        {this.state.participants.map((participant, i) => (
+          <li key={participant.id}>
+            <Participant i={i + 1} participant={participant} />
+          </li>
+        ))}
+      </Participants>
+    );
+  }
 }
 
 export default ParticipantsTable;
