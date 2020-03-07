@@ -10,36 +10,46 @@ class JudgeSerializer(serializers.ModelSerializer):
 
 
 class ParticipantSerializer(serializers.ModelSerializer):
-    marks = serializers.SerializerMethodField()
+    criteria_marks = serializers.SerializerMethodField()
+    total_categories = serializers.SerializerMethodField()
+    total = serializers.SerializerMethodField()
 
     class Meta:
         model = Participant
         fields = '__all__'
 
-    def get_marks(self, obj):
-        marks = {}
+    def get_criteria_marks(self, obj):
+        criteria_marks = {}
 
-        total = 0
+        for category in range(1, 4):
+            criteria_marks[category] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 
-        for category in range(3):
-            marks[category] = {
-                'criteria': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                'total': 0
-            }
-
-            total_category = 0
-
-            for rating in Rating.objects.filter(category=category, participant=obj.id):
+            for rating in Rating.objects.filter(category=category - 1, participant=obj.id):
                 for i in range(10):
-                    marks[category]['criteria'][i] += rating.marks[i]
-                    total_category += rating.marks[i]
+                    criteria_marks[category][i] += rating.marks[i]
 
-            marks[category]['total'] = total_category
-            total += total_category
+        return criteria_marks
 
-        marks['total'] = total
+    def get_total_categories(self, obj):
+        total_categories = {}
+        criteria_marks = self.get_criteria_marks(obj)
 
-        return marks
+        for category in range(1, 4):
+            total_categories[category] = 0
+
+            for i in range(10):
+                total_categories[category] += criteria_marks[category][i]
+
+        return total_categories
+
+    def get_total(self, obj):
+        total = 0
+        total_categories = self.get_total_categories(obj)
+
+        for category in range(1, 4):
+            total += total_categories[category]
+
+        return total
 
 
 class RatingSerializer(serializers.ModelSerializer):

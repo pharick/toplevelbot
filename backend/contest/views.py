@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 
 from .models import Judge, Participant, Rating, ParticipantSession
 from .serializers import JudgeSerializer, ParticipantSerializer, RatingSerializer, ParticipantSessionSerializer

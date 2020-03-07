@@ -1,11 +1,10 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 const categories = ['Акварельные губы', 'Веки с растушевкой', 'Пудровые брови'];
 
 const criteria = {
-  0: [
+  1: [
     'Впечатление',
     'Форма',
     'Симметрия',
@@ -18,7 +17,7 @@ const criteria = {
     'Травматичность'
   ],
 
-  1: [
+  2: [
     'Техника',
     'Форма',
     'Симметрия',
@@ -31,7 +30,7 @@ const criteria = {
     'Травматичность'
   ],
 
-  2: [
+  3: [
     'Техника',
     'Форма',
     'Симметрия',
@@ -148,7 +147,6 @@ const CriterionLabel = styled.p`
 
 const ParticipantMarks = ({criteria, marks, total}) => (
   <ParticipantMarksWrapper>
-    {console.log(criteria)}
     {marks.map((mark, i) => (
       <ParticipantMark key={i}>
         <MarkValue>{mark}</MarkValue>
@@ -172,28 +170,19 @@ const Participant = ({ i, participant, category }) => (
       <ParticipantName>{participant.first_name} {participant.last_name}</ParticipantName>
     </ParticipantInfo>
 
-    <Router>
-      <Switch>
-        <Route path="/lips">
-          <ParticipantMarks criteria={criteria[0]} marks={participant.marks[0].criteria} total={participant.marks[0].total}/>
-        </Route>
-
-        <Route path="/eyelids">
-          <ParticipantMarks criteria={criteria[1]} marks={participant.marks[1].criteria} total={participant.marks[1].total}/>
-        </Route>
-
-        <Route path="/eyebrows">
-          <ParticipantMarks criteria={criteria[2]} marks={participant.marks[2].criteria} total={participant.marks[2].total}/>
-        </Route>
-
-        <Route path="/">
-          <ParticipantMarks
-            criteria={categories}
-            marks={[participant.marks[0].total, participant.marks[1].total, participant.marks[2].total]}
-            total={participant.marks.total}/>
-        </Route>
-      </Switch>
-    </Router>
+    {category ?
+      <ParticipantMarks
+        criteria={criteria[category]}
+        marks={participant.criteria_marks[category]}
+        total={participant.total_categories[category]}
+      />
+      :
+      <ParticipantMarks
+        criteria={categories}
+        marks={[participant.total_categories[1], participant.total_categories[2], participant.total_categories[3]]}
+        total={participant.total}
+      />
+    }
   </ParticipantArticle>
 );
 
@@ -214,11 +203,20 @@ class ParticipantsTable extends Component {
     this.setState({ participants });
   }
 
-  compare_participants(a, b) {
-    if (a.marks.total > b.marks.total) return -1;
-    if (a.marks.total === b.marks.total) return 0;
-    if (a.marks.total < b.marks.total) return 1;
-  }
+  compare_participants = (a, b) => {
+    const { category } = this.props;
+    console.log(category);
+
+    if (category) {
+      if (a.total_categories[category] > b.total_categories[category]) return -1;
+      if (a.total_categories[category] == b.total_categories[category]) return 0;
+      if (a.total_categories[category] < b.total_categories[category]) return 1;
+    }
+
+    if (a.total > b.total) return -1;
+    if (a.total == b.total) return 0;
+    if (a.total < b.total) return 1;
+  };
 
   componentDidMount() {
     this.get_participants();
@@ -230,7 +228,7 @@ class ParticipantsTable extends Component {
       <Participants>
         {this.state.participants.map((participant, i) => (
           <li key={participant.id}>
-            <Participant i={i + 1} participant={participant} />
+            <Participant i={i + 1} participant={participant} category={this.props.category} />
           </li>
         ))}
       </Participants>

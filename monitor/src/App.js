@@ -3,6 +3,7 @@ import { createGlobalStyle } from 'styled-components';
 
 import ParticipantsTable from './components/ParticipantsTable';
 import bg from './bg.jpg';
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
 const GlobalStyle = createGlobalStyle`
   body {
@@ -29,7 +30,26 @@ function App() {
   return (
     <div className="App">
       <GlobalStyle/>
-      <ParticipantsTable/>
+
+      <Router>
+        <Switch>
+          <Route path="/lips">
+            <ParticipantsTable category={1}/>
+          </Route>
+
+          <Route path="/eyelids">
+            <ParticipantsTable category={2}/>
+          </Route>
+
+          <Route path="/eyebrows">
+            <ParticipantsTable category={3}/>
+          </Route>
+
+          <Route path="/">
+            <ParticipantsTable />
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }
