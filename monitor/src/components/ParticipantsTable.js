@@ -219,7 +219,7 @@ class ParticipantsTable extends Component {
   }
 
   async get_participants() {
-    const participants_response = await fetch('http://192.168.1.50/api/participants/');
+    const participants_response = await fetch('http://178.128.249.44/api/participants/');
     let participants = await participants_response.json();
 
     participants.sort(this.compare_participants);

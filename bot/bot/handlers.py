@@ -48,7 +48,12 @@ def start(update, context):
         participant = context.user_data['participant']
 
         reply_markdown = f'*Привет, {participant["first_name"]}!*\n' \
-                         'Вы участник конкурса.'
+                         'Вы участник конкурса.' \
+                         'Перейдя по этим ссылкам, вы сможете узнать результаты конкурса:' \
+                         '1. [Акварельные губы](http://178.128.249.44/lips)' \
+                         '2. [Веки с растушевкой](http://178.128.249.44/eyelids)' \
+                         '3. [Пудровые брови](http://178.128.249.44/eyebrows)' \
+                         '4. [Гран-при](http://178.128.249.44/)'
 
         update.message.reply_markdown(reply_markdown)
 
