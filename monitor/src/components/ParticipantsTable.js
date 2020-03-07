@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 
+import ParticipantPhotos from "./ParticipantPhotos";
+
 const categories = ['Акварельные губы', 'Веки с растушевкой', 'Пудровые брови'];
 
 const criteria = {
@@ -59,6 +61,7 @@ const ParticipantArticle = styled.article`
   
   @media(max-width: 840px) {
     flex-direction: column;
+    padding-bottom: 0.5em;
   }
 `;
 
@@ -88,7 +91,7 @@ const ParticipantPhoto = styled.img`
   flex: none;
 `;
 
-const ParticipantName = styled.p`
+const ParticipantName = styled.h2`
   font-size: 0.8em;
   font-weight: bold;
   margin: 0 1em 0 0;
@@ -183,6 +186,8 @@ const Participant = ({ i, participant, category }) => (
         total={participant.total}
       />
     }
+
+    <ParticipantPhotos participant={participant}/>
   </ParticipantArticle>
 );
 
@@ -209,12 +214,12 @@ class ParticipantsTable extends Component {
 
     if (category) {
       if (a.total_categories[category] > b.total_categories[category]) return -1;
-      if (a.total_categories[category] == b.total_categories[category]) return 0;
+      if (a.total_categories[category] === b.total_categories[category]) return 0;
       if (a.total_categories[category] < b.total_categories[category]) return 1;
     }
 
     if (a.total > b.total) return -1;
-    if (a.total == b.total) return 0;
+    if (a.total === b.total) return 0;
     if (a.total < b.total) return 1;
   };
 
