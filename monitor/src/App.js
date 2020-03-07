@@ -12,12 +12,16 @@ const GlobalStyle = createGlobalStyle`
                  sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    background-image: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${bg});
-    background-size: cover;
-    background-attachment: fixed;
-    background-position: center;
+    background-color: black;
     padding: 1em;
     color: white;
+    
+    @media(min-width: 840px) {
+      background-image: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${bg});
+      background-size: cover;
+      background-attachment: fixed;
+      background-position: center;
+     }
   }
 `;
 

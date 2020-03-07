@@ -66,8 +66,9 @@ const ParticipantArticle = styled.article`
 const ParticipantInfo = styled.div`
   display: flex;
   align-items: center;
-  width: 400px;
+  max-width: 400px;
   flex: none;
+  margin: 0.2em 0;
   
   @media(max-width: 840px) {
     margin-top: 0.2em;
@@ -118,13 +119,18 @@ const ParticipantMark = styled.div`
     display: flex;
     align-items: center;
     flex-direction: row-reverse;
-    justify-content: right;
+    justify-content: center;
   }
 `;
 
 const MarkValue = styled.p`
   font-size: 1.3em;
   margin: 0;
+  
+  @media(max-width: 840px) {
+    flex: 1;
+    text-align: left;
+   }
 `;
 
 const CriterionLabel = styled.p`
@@ -133,6 +139,8 @@ const CriterionLabel = styled.p`
   color: darkgray;
   
   @media(max-width: 840px) {
+    flex: 2;
+    text-align: right;
     font-size: 0.6em;
     margin-right: 1em;
   }
@@ -199,7 +207,7 @@ class ParticipantsTable extends Component {
   }
 
   async get_participants() {
-    const participants_response = await fetch('http://localhost/api/participants/');
+    const participants_response = await fetch('http://192.168.1.50/api/participants/');
     let participants = await participants_response.json();
 
     participants.sort(this.compare_participants);
@@ -207,9 +215,9 @@ class ParticipantsTable extends Component {
   }
 
   compare_participants(a, b) {
-    if (a.total > b.total) return -1;
-    if (a.total === b.total) return 0;
-    if (a.total < b.total) return 1;
+    if (a.marks.total > b.marks.total) return -1;
+    if (a.marks.total === b.marks.total) return 0;
+    if (a.marks.total < b.marks.total) return 1;
   }
 
   componentDidMount() {
