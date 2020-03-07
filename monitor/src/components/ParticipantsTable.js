@@ -47,6 +47,11 @@ const criteria = {
   ]
 };
 
+const Caption = styled.h1`
+  margin: 0;
+  text-align: center;
+`;
+
 const Participants = styled.ol`
   list-style: none;
   padding: 0;
@@ -242,13 +247,21 @@ class ParticipantsTable extends Component {
 
   render() {
     return (
-      <Participants>
-        {this.state.participants.map((participant, i) => (
-          <li key={participant.id}>
-            <Participant i={i + 1} participant={participant} category={this.props.category} />
-          </li>
-        ))}
-      </Participants>
+      <>
+        {this.props.category ?
+          <Caption>Результаты в номинации «{categories[this.props.category - 1]}»</Caption>
+          :
+          <Caption>Результаты Гран-при</Caption>
+        }
+
+        <Participants>
+          {this.state.participants.map((participant, i) => (
+            <li key={participant.id}>
+              <Participant i={i + 1} participant={participant} category={this.props.category} />
+            </li>
+          ))}
+        </Participants>
+      </>
     );
   }
 }
