@@ -1,6 +1,7 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 
+import Toggle from "./Toggle";
 import ParticipantPhotos from "./ParticipantPhotos";
 
 const categories = ['Акварельные губы', 'Веки с растушевкой', 'Пудровые брови'];
@@ -148,6 +149,14 @@ const CriterionLabel = styled.p`
   }
 `;
 
+const MobileContent = styled.section`
+  display: none;
+  
+  @media(max-width: 840px) {
+    display: block;
+  }
+`;
+
 const ParticipantMarks = ({criteria, marks, total}) => (
   <ParticipantMarksWrapper>
     {marks.map((mark, i) => (
@@ -187,7 +196,11 @@ const Participant = ({ i, participant, category }) => (
       />
     }
 
-    <ParticipantPhotos participant={participant}/>
+    <MobileContent>
+      <Toggle title="Фотографии">
+        <ParticipantPhotos participant={participant} category={category}/>
+      </Toggle>
+    </MobileContent>
   </ParticipantArticle>
 );
 
@@ -210,7 +223,6 @@ class ParticipantsTable extends Component {
 
   compare_participants = (a, b) => {
     const { category } = this.props;
-    console.log(category);
 
     if (category) {
       if (a.total_categories[category] > b.total_categories[category]) return -1;
