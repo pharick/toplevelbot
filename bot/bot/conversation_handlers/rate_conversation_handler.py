@@ -83,6 +83,8 @@ def make_participant_choices(participants, line_len):
         participant_choices[line].append(InlineKeyboardButton(participant, callback_data=str(participant)))
         count += 1
 
+    participant_choices.append([InlineKeyboardButton('Отмена', callback_data='CANCEL')])
+
     return InlineKeyboardMarkup(participant_choices)
 
 
@@ -96,7 +98,7 @@ def send_participant_notification(bot, participant_id, judge_name, category_numb
     chat_id = participant_session.json()['chat_id']
 
     message = f'Вас оценил судья {judge_name} в категории *{category_names[category_number]}*\n' \
-                                       f'{separator}\n'
+              f'{separator}\n'
 
     for i in range(len(marks)):
         message += f'*{criteria[i]}:* {marks[i]}\n'
@@ -114,7 +116,8 @@ def rate(update, context):
     category_choices = InlineKeyboardMarkup([
         [InlineKeyboardButton('Акварельные губы', callback_data='0')],
         [InlineKeyboardButton('Веки с растушевкой', callback_data='1')],
-        [InlineKeyboardButton('Пудровые брови', callback_data='2')]
+        [InlineKeyboardButton('Пудровые брови', callback_data='2')],
+        [InlineKeyboardButton('Отмена', callback_data='CANCEL')]
     ])
 
     update.message.reply_markdown(
