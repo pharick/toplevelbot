@@ -94,13 +94,22 @@ const ParticipantNumber = styled.p`
   text-align: right;
   margin: 0 0.5em 0 0;
   flex: none;
+  
+  @media(max-width: 840px) {
+    width: auto;
+  }
 `;
 
 const ParticipantPhoto = styled.img`
   display: block;
-  margin-right: 1em;
-  width: 80px;
+  margin-right: 0.8em;
+  width: 105px;
   flex: none;
+  border-radius: 100%;
+  
+  @media(max-width: 840px) {
+    margin-right: 0.5em;
+  }
 `;
 
 const ParticipantName = styled.h2`
@@ -127,9 +136,6 @@ const ParticipantMark = styled.div`
   flex: 1;
   font-weight: ${props => props.total ? "bold" : "normal"};
   min-width: 110px;
-  font-family: "Drunk Medium Desktop", sans-serif;
-  font-size: 1.3em;
-  letter-spacing: 0.05em;
   
   @media(max-width: 840px) {
     width: 100%;
@@ -141,18 +147,21 @@ const ParticipantMark = styled.div`
 `;
 
 const MarkValue = styled.p`
-  font-size: 1.3em;
+  font-family: "Drunk Medium Desktop", sans-serif;
+  font-size: 1.8em;
+  letter-spacing: 0.05em;
   margin: 0;
   
   @media(max-width: 840px) {
     flex: 1;
     text-align: left;
+    font-size: 1em;
    }
 `;
 
 const CriterionLabel = styled.p`
   margin: 0;
-  font-size: 0.5em;
+  font-size: 0.6em;
   color: darkgray;
   
   @media(max-width: 840px) {
@@ -228,7 +237,7 @@ class ParticipantsTable extends Component {
   }
 
   async get_participants() {
-    const participants_response = await fetch('http://localhost/api/participants/');
+    const participants_response = await fetch('http://192.168.1.50/api/participants/');
     let participants = await participants_response.json();
 
     participants.sort(this.compare_participants);
