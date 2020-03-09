@@ -49,7 +49,7 @@ const criteria = {
 
 const Caption = styled.h1`
   font-family: "Drunk Medium Desktop", sans-serif;
-  font-size: 4em;
+  font-size: 3em;
   letter-spacing: 0.05em;
   margin: 0;
   text-align: center;
@@ -60,13 +60,13 @@ const Participants = styled.ol`
   padding: 0;
   
   li:not(:last-child) {
-    border-bottom: 1px solid lightgrey;
+    //border-bottom: 1px solid rgba(0, 0, 0, 1);
   }
 `;
 
 const ParticipantArticle = styled.article`
   display: flex;
-  font-size: 2em;
+  font-size: 1.5em;
   
   @media(max-width: 840px) {
     flex-direction: column;
@@ -77,15 +77,17 @@ const ParticipantArticle = styled.article`
 const ParticipantInfo = styled.div`
   display: flex;
   align-items: center;
-  width: 400px;
+  width: 500px;
   flex: none;
-  margin: 0.2em 0;
+  margin: 0;
   font-family: "Drunk Medium Desktop", sans-serif;
   font-size: 1.7em;
   letter-spacing: 0.05em;
   
   @media(max-width: 840px) {
     margin-top: 0.2em;
+    width: auto;
+    justify-content: center;
   }
 `;
 
@@ -103,7 +105,7 @@ const ParticipantNumber = styled.p`
 const ParticipantPhoto = styled.img`
   display: block;
   margin-right: 0.8em;
-  width: 105px;
+  width: 80px;
   flex: none;
   border-radius: 100%;
   
@@ -115,7 +117,6 @@ const ParticipantPhoto = styled.img`
 const ParticipantName = styled.h2`
   font-size: 0.8em;
   font-weight: bold;
-  margin: 0 1em 0 0;
 `;
 
 const ParticipantMarksWrapper = styled.div`
@@ -167,7 +168,6 @@ const CriterionLabel = styled.p`
   @media(max-width: 840px) {
     flex: 2;
     text-align: right;
-    font-size: 0.6em;
     margin-right: 1em;
   }
 `;
@@ -237,7 +237,7 @@ class ParticipantsTable extends Component {
   }
 
   async get_participants() {
-    const participants_response = await fetch('http://192.168.1.50/api/participants/');
+    const participants_response = await fetch('http://localhost/api/participants/');
     let participants = await participants_response.json();
 
     participants.sort(this.compare_participants);
