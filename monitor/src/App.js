@@ -1,11 +1,19 @@
 import React from 'react';
 import { createGlobalStyle } from 'styled-components';
-
-import ParticipantsTable from './components/ParticipantsTable';
-import bg from './bg.jpg';
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 
+import ParticipantsTable from './components/ParticipantsTable';
+
+import bg from './bg.jpg';
+import drunkMediumDesktopFont from './Druk-Medium-Desktop.otf';
+
+
 const GlobalStyle = createGlobalStyle`
+  @font-face {
+    font-family: "Drunk Medium Desktop";
+    src: url(${drunkMediumDesktopFont}) format("opentype");
+  }
+  
   body {
     margin: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",

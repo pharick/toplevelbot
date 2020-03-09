@@ -48,6 +48,9 @@ const criteria = {
 };
 
 const Caption = styled.h1`
+  font-family: "Drunk Medium Desktop", sans-serif;
+  font-size: 4em;
+  letter-spacing: 0.05em;
   margin: 0;
   text-align: center;
 `;
@@ -74,9 +77,12 @@ const ParticipantArticle = styled.article`
 const ParticipantInfo = styled.div`
   display: flex;
   align-items: center;
-  max-width: 400px;
+  width: 400px;
   flex: none;
   margin: 0.2em 0;
+  font-family: "Drunk Medium Desktop", sans-serif;
+  font-size: 1.7em;
+  letter-spacing: 0.05em;
   
   @media(max-width: 840px) {
     margin-top: 0.2em;
@@ -121,6 +127,9 @@ const ParticipantMark = styled.div`
   flex: 1;
   font-weight: ${props => props.total ? "bold" : "normal"};
   min-width: 110px;
+  font-family: "Drunk Medium Desktop", sans-serif;
+  font-size: 1.3em;
+  letter-spacing: 0.05em;
   
   @media(max-width: 840px) {
     width: 100%;
@@ -219,7 +228,7 @@ class ParticipantsTable extends Component {
   }
 
   async get_participants() {
-    const participants_response = await fetch('http://178.128.249.44/api/participants/');
+    const participants_response = await fetch('http://localhost/api/participants/');
     let participants = await participants_response.json();
 
     participants.sort(this.compare_participants);
@@ -249,9 +258,9 @@ class ParticipantsTable extends Component {
     return (
       <>
         {this.props.category ?
-          <Caption>Результаты в номинации «{categories[this.props.category - 1]}»</Caption>
+          <Caption>{categories[this.props.category - 1]}</Caption>
           :
-          <Caption>Результаты Гран-при</Caption>
+          <Caption>Гран-при</Caption>
         }
 
         <Participants>
