@@ -45,15 +45,15 @@ function App() {
             <ParticipantsTable category={1}/>
           </Route>
 
-          <Route path="/eyelids">
+          <Route path="/eyeline">
             <ParticipantsTable category={2}/>
           </Route>
 
-          <Route path="/eyebrows">
+          <Route path="/brows">
             <ParticipantsTable category={3}/>
           </Route>
 
-          <Route path="/">
+          <Route path="/grand-prix">
             <ParticipantsTable />
           </Route>
         </Switch>

@@ -60,7 +60,7 @@ const Participants = styled.ol`
   padding: 0;
   
   li:not(:last-child) {
-    //border-bottom: 1px solid rgba(0, 0, 0, 1);
+    border-bottom: 1px solid rgba(100, 100, 100, 0.4);
   }
 `;
 
