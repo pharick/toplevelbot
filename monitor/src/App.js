@@ -1,6 +1,5 @@
-import React from 'react';
-import { createGlobalStyle } from 'styled-components';
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import React, {Component} from 'react';
+import {createGlobalStyle} from 'styled-components';
 
 import ParticipantsTable from './components/ParticipantsTable';
 
@@ -34,32 +33,30 @@ const GlobalStyle = createGlobalStyle`
   }
 `;
 
-function App() {
-  return (
-    <div className="App">
-      <GlobalStyle/>
+class App extends Component {
+  state = {
+    participants: []
+  };
 
-      <Router>
-        <Switch>
-          <Route path="/lips">
-            <ParticipantsTable category={1}/>
-          </Route>
+  async get_participants() {
+    const participants_response = await fetch('http://localhost/api/participants/');
+    return await participants_response.json();
+  }
 
-          <Route path="/eyeline">
-            <ParticipantsTable category={2}/>
-          </Route>
+  async componentDidMount() {
+    const participants = await this.get_participants();
+    this.setState({ participants });
+    // this.timer = setInterval(() => this.get_participants(), 10000);
+  }
 
-          <Route path="/brows">
-            <ParticipantsTable category={3}/>
-          </Route>
-
-          <Route path="/grand-prix">
-            <ParticipantsTable />
-          </Route>
-        </Switch>
-      </Router>
-    </div>
-  );
+  render() {
+    return (
+      <div className="App">
+        <GlobalStyle/>
+        <ParticipantsTable participants={this.state.participants}/>
+      </div>
+    );
+  }
 }
 
 export default App;

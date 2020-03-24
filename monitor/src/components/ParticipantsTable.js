@@ -1,61 +1,22 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+
 import Toggle from "./Toggle";
 import ParticipantPhotos from "./ParticipantPhotos";
-
-const categories = ['Акварельные губы', 'Веки с растушевкой', 'Пудровые брови'];
-
-const criteria = {
-  1: [
-    'Впечатление',
-    'Форма',
-    'Симметрия',
-    'Цвет',
-    'Насыщенность',
-    'Контур',
-    'Равномерность покраса',
-    'Оформление уголков',
-    'Глубина пигмента',
-    'Травматичность'
-  ],
-
-  2: [
-    'Техника',
-    'Форма',
-    'Симметрия',
-    'Межресничное пространство',
-    'Прокрас стрелок',
-    'Внутренний уголок глаза',
-    'Внешний уголок глаза',
-    'Глубина пигмента',
-    'Градиент',
-    'Травматичность'
-  ],
-
-  3: [
-    'Техника',
-    'Форма',
-    'Симметрия',
-    'Головка брови',
-    'Верх тела брови',
-    'Низ тела брови',
-    'Хвост брови',
-    'Равномерность прокраса',
-    'Градиент',
-    'Травматичность'
-  ]
-};
+import categories from "../categories";
 
 const Caption = styled.h1`
   font-family: "Drunk Medium Desktop", sans-serif;
   font-size: 3em;
+  line-height: 0.9em;
   letter-spacing: 0.05em;
   margin: 0;
   text-align: center;
 `;
 
-const Participants = styled.ol`
+const ParticipantList = styled.ol`
   list-style: none;
   padding: 0;
   
@@ -68,7 +29,7 @@ const ParticipantArticle = styled.article`
   display: flex;
   font-size: 1.5em;
   
-  @media(max-width: 840px) {
+  @media(max-width: 1200px) {
     flex-direction: column;
     padding-bottom: 0.5em;
   }
@@ -84,7 +45,7 @@ const ParticipantInfo = styled.div`
   font-size: 1.7em;
   letter-spacing: 0.05em;
   
-  @media(max-width: 840px) {
+  @media(max-width: 1200px) {
     margin-top: 0.2em;
     width: auto;
     justify-content: center;
@@ -97,7 +58,7 @@ const ParticipantNumber = styled.p`
   margin: 0 0.5em 0 0;
   flex: none;
   
-  @media(max-width: 840px) {
+  @media(max-width: 1200px) {
     width: auto;
   }
 `;
@@ -109,36 +70,34 @@ const ParticipantPhoto = styled.img`
   flex: none;
   border-radius: 100%;
   
-  @media(max-width: 840px) {
+  @media(max-width: 1200px) {
     margin-right: 0.5em;
   }
 `;
 
 const ParticipantName = styled.h2`
-  font-size: 0.8em;
+  font-size: 1em;
+  line-height: 1em;
   font-weight: bold;
+  margin: 0;
 `;
 
-const ParticipantMarksWrapper = styled.div`
+const MarksWrapper = styled.div`
   flex: 1;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  margin: 0.2em 0;
-  flex-wrap: wrap;
+  margin: 0.3em 0;
   
-  @media(max-width: 840px) {
+  @media(max-width: 1200px) {
     flex-direction: column;
   }
 `;
 
-const ParticipantMark = styled.div`
+const Mark = styled.div`
   text-align: center;
-  flex: 1;
   font-weight: ${props => props.total ? "bold" : "normal"};
-  min-width: 110px;
+  flex: 1;
   
-  @media(max-width: 840px) {
+  @media(max-width: 1200px) {
     width: 100%;
     display: flex;
     align-items: center;
@@ -150,22 +109,24 @@ const ParticipantMark = styled.div`
 const MarkValue = styled.p`
   font-family: "Drunk Medium Desktop", sans-serif;
   font-size: 1.8em;
+  line-height: 0.9em;
   letter-spacing: 0.05em;
   margin: 0;
   
-  @media(max-width: 840px) {
+  @media(max-width: 1200px) {
     flex: 1;
     text-align: left;
     font-size: 1em;
    }
 `;
 
-const CriterionLabel = styled.p`
+const MarkLabel = styled.p`
   margin: 0;
-  font-size: 0.6em;
+  font-size: 0.8em;
   color: darkgray;
+  word-wrap: break-word;
   
-  @media(max-width: 840px) {
+  @media(max-width: 1200px) {
     flex: 2;
     text-align: right;
     margin-right: 1em;
@@ -175,25 +136,19 @@ const CriterionLabel = styled.p`
 const MobileContent = styled.section`
   display: none;
   
-  @media(max-width: 840px) {
+  @media(max-width: 1200px) {
     display: block;
   }
 `;
 
-const ParticipantMarks = ({criteria, marks, total}) => (
-  <ParticipantMarksWrapper>
-    {marks.map((mark, i) => (
-      <ParticipantMark key={i}>
-        <MarkValue>{mark}</MarkValue>
-        <CriterionLabel>{criteria[i]}</CriterionLabel>
-      </ParticipantMark>
+const Participants = ({ participants, category }) => (
+  <ParticipantList>
+    {participants.map((participant, i) => (
+      <li key={participant.id}>
+        <Participant i={i + 1} participant={participant} category={category}/>
+      </li>
     ))}
-
-    <ParticipantMark total>
-      <MarkValue>{total}</MarkValue>
-      <CriterionLabel>Итого</CriterionLabel>
-    </ParticipantMark>
-  </ParticipantMarksWrapper>
+  </ParticipantList>
 );
 
 const Participant = ({ i, participant, category }) => (
@@ -205,19 +160,7 @@ const Participant = ({ i, participant, category }) => (
       <ParticipantName>{participant.first_name} {participant.last_name}</ParticipantName>
     </ParticipantInfo>
 
-    {category ?
-      <ParticipantMarks
-        criteria={criteria[category]}
-        marks={participant.criteria_marks[category]}
-        total={participant.total_categories[category]}
-      />
-      :
-      <ParticipantMarks
-        criteria={categories}
-        marks={[participant.total_categories[1], participant.total_categories[2], participant.total_categories[3]]}
-        total={participant.total}
-      />
-    }
+    <Marks category={categories[category]} marks={participant.marks[category]}/>
 
     <MobileContent>
       <Toggle title="Фотографии">
@@ -225,6 +168,24 @@ const Participant = ({ i, participant, category }) => (
       </Toggle>
     </MobileContent>
   </ParticipantArticle>
+);
+
+const Marks = ({ category, marks }) => (
+  <MarksWrapper>
+    {Object.keys(marks).map((judge, i) => (
+      <Mark key={i}>
+        <MarkValue>{marks[judge].reduce((sum, n) => sum + n, 0)}</MarkValue>
+        <MarkLabel>{judge}</MarkLabel>
+      </Mark>
+    ))}
+
+    <Mark total>
+      <MarkValue>
+        {Object.values(marks).map(judge => judge.reduce((sum, n) => sum + n, 0)).reduce((sum, n) => sum + n, 0)}
+      </MarkValue>
+      <MarkLabel>Итого</MarkLabel>
+    </Mark>
+  </MarksWrapper>
 );
 
 class ParticipantsTable extends Component {
@@ -236,50 +197,30 @@ class ParticipantsTable extends Component {
     };
   }
 
-  async get_participants() {
-    const participants_response = await fetch('http://178.128.249.44/api/participants/');
-    let participants = await participants_response.json();
-
-    participants.sort(this.compare_participants);
-    this.setState({ participants });
-  }
-
-  compare_participants = (a, b) => {
-    const { category } = this.props;
-
-    if (category) {
-      if (a.total_categories[category] > b.total_categories[category]) return -1;
-      if (a.total_categories[category] === b.total_categories[category]) return 0;
-      if (a.total_categories[category] < b.total_categories[category]) return 1;
-    }
-
-    if (a.total > b.total) return -1;
-    if (a.total === b.total) return 0;
-    if (a.total < b.total) return 1;
-  };
-
-  componentDidMount() {
-    this.get_participants();
-    this.timer = setInterval(() => this.get_participants(), 10000);
-  }
+  // compare_participants = (a, b) => {
+  //   const { category } = this.props;
+  //
+  //   if (category) {
+  //     if (a.total_categories[category] > b.total_categories[category]) return -1;
+  //     if (a.total_categories[category] === b.total_categories[category]) return 0;
+  //     if (a.total_categories[category] < b.total_categories[category]) return 1;
+  //   }
+  //
+  //   if (a.total > b.total) return -1;
+  //   if (a.total === b.total) return 0;
+  //   if (a.total < b.total) return 1;
+  // };
 
   render() {
     return (
-      <>
-        {this.props.category ?
-          <Caption>{categories[this.props.category - 1]}</Caption>
-          :
-          <Caption>Гран-при</Caption>
-        }
-
-        <Participants>
-          {this.state.participants.map((participant, i) => (
-            <li key={participant.id}>
-              <Participant i={i + 1} participant={participant} category={this.props.category} />
-            </li>
-          ))}
-        </Participants>
-      </>
+      <Router>
+        <Switch>
+          <Route path="/lips">
+            <Caption>{categories[1].title}</Caption>
+            <Participants participants={this.props.participants} category={1}/>
+          </Route>x
+        </Switch>
+      </Router>
     );
   }
 }
