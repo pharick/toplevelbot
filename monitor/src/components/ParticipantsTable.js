@@ -7,11 +7,17 @@ import Toggle from "./Toggle";
 import ParticipantPhotos from "./ParticipantPhotos";
 import categories from "../categories";
 
+const Container = styled.div`
+  margin: 0 auto;
+
+  @media(max-width: 1200px) {
+    max-width: 540px;
+  }
+`;
+
 const Caption = styled.h1`
-  font-family: "Drunk Medium Desktop", sans-serif;
-  font-size: 3em;
-  line-height: 0.9em;
-  letter-spacing: 0.05em;
+  font-family: 'Rubik Mono One', sans-serif;
+  font-size: 1.5em;
   margin: 0;
   text-align: center;
 `;
@@ -28,10 +34,11 @@ const ParticipantList = styled.ol`
 const ParticipantArticle = styled.article`
   display: flex;
   font-size: 1.5em;
+  margin: 0.2em 0;
   
   @media(max-width: 1200px) {
     flex-direction: column;
-    padding-bottom: 0.5em;
+    padding: 0.5em 0;
   }
 `;
 
@@ -41,14 +48,12 @@ const ParticipantInfo = styled.div`
   width: 500px;
   flex: none;
   margin: 0;
-  font-family: "Drunk Medium Desktop", sans-serif;
-  font-size: 1.7em;
-  letter-spacing: 0.05em;
+  font-family: 'Rubik Mono One', sans-serif;
+  font-size: 1.2em;  
   
   @media(max-width: 1200px) {
     margin-top: 0.2em;
     width: auto;
-    justify-content: center;
   }
 `;
 
@@ -80,12 +85,13 @@ const ParticipantName = styled.h2`
   line-height: 1em;
   font-weight: bold;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
 `;
 
 const MarksWrapper = styled.div`
   flex: 1;
   display: flex;
-  margin: 0.3em 0;
   
   @media(max-width: 1200px) {
     flex-direction: column;
@@ -97,6 +103,10 @@ const Mark = styled.div`
   font-weight: ${props => props.total ? "bold" : "normal"};
   flex: 1;
   
+  &:not(:last-child) {
+    margin-right: 0.2em;
+  }
+  
   @media(max-width: 1200px) {
     width: 100%;
     display: flex;
@@ -107,10 +117,8 @@ const Mark = styled.div`
 `;
 
 const MarkValue = styled.p`
-  font-family: "Drunk Medium Desktop", sans-serif;
-  font-size: 1.8em;
-  line-height: 0.9em;
-  letter-spacing: 0.05em;
+  font-family: 'Rubik Mono One', sans-serif;
+  font-size: 1.5em;
   margin: 0;
   
   @media(max-width: 1200px) {
@@ -122,9 +130,8 @@ const MarkValue = styled.p`
 
 const MarkLabel = styled.p`
   margin: 0;
-  font-size: 0.8em;
+  font-size: 0.7em;
   color: darkgray;
-  word-wrap: break-word;
   
   @media(max-width: 1200px) {
     flex: 2;
@@ -213,14 +220,16 @@ class ParticipantsTable extends Component {
 
   render() {
     return (
-      <Router>
-        <Switch>
-          <Route path="/lips">
-            <Caption>{categories[1].title}</Caption>
-            <Participants participants={this.props.participants} category={1}/>
-          </Route>x
-        </Switch>
-      </Router>
+      <Container>
+        <Router>
+          <Switch>
+            <Route path="/lips">
+              <Caption>{categories[1].title}</Caption>
+              <Participants participants={this.props.participants} category={1}/>
+            </Route>x
+          </Switch>
+        </Router>
+      </Container>
     );
   }
 }

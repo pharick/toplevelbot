@@ -4,27 +4,16 @@ import {createGlobalStyle} from 'styled-components';
 import ParticipantsTable from './components/ParticipantsTable';
 
 import bg from './bg.jpg';
-import drunkMediumDesktopFont from './Druk-Medium-Desktop.otf';
-
 
 const GlobalStyle = createGlobalStyle`
-  @font-face {
-    font-family: "Drunk Medium Desktop";
-    src: url(${drunkMediumDesktopFont}) format("opentype");
-  }
-  
   body {
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-                 "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-                 sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+    font-family: "Open Sans", sans-serif;
     background-color: black;
     padding: 1em;
     color: white;
     
-    @media(min-width: 840px) {
+    @media(min-width: 1200px) {
       background-image: linear-gradient(to right, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url(${bg});
       background-size: cover;
       background-attachment: fixed;
