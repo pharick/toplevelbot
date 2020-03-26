@@ -1,10 +1,12 @@
 import React, {Component} from 'react';
 import styled from 'styled-components';
 
-import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { BrowserRouter as Router, Switch, Route, NavLink } from "react-router-dom";
 
-import Toggle from "./Toggle";
+import ToggleCaption from "./ToggleCaption";
 import ParticipantPhotos from "./ParticipantPhotos";
+import CriteriaMarks from "./CriteriaMarks";
+
 import categories from "../categories";
 
 const Container = styled.div`
@@ -15,16 +17,33 @@ const Container = styled.div`
   }
 `;
 
-const Caption = styled.h1`
-  font-family: 'Rubik Mono One', sans-serif;
-  font-size: 1.5em;
-  margin: 0;
-  text-align: center;
+const CategoriesList = styled.ul`
+  list-style: none;
+  padding: 0;
+  justify-content: center;
+  display: flex;
+  flex-wrap: wrap;
+`;
+
+const CategoryItem = styled.li`
+  a {
+    display: block;
+    font-family: 'Rubik Mono One', sans-serif;
+    font-size: 1.5em;
+    color: darkgray;
+    margin: 0 0.2em;
+    padding: 0.2em;
+    
+    &:hover {
+      background-color: rgba(100, 100, 100, 0.4);
+    }
+  }
 `;
 
 const ParticipantList = styled.ol`
   list-style: none;
   padding: 0;
+  margin: 0;
   
   li:not(:last-child) {
     border-bottom: 1px solid rgba(100, 100, 100, 0.4);
@@ -45,6 +64,7 @@ const ParticipantArticle = styled.article`
 const ParticipantInfo = styled.div`
   display: flex;
   align-items: center;
+  justify-content: flex-start;
   width: 500px;
   flex: none;
   margin: 0;
@@ -58,19 +78,15 @@ const ParticipantInfo = styled.div`
 `;
 
 const ParticipantNumber = styled.p`
-  width: 50px;
-  text-align: right;
-  margin: 0 0.5em 0 0;
+  width: 80px;
   flex: none;
-  
-  @media(max-width: 1200px) {
-    width: auto;
-  }
+  text-align: right;
+  margin: 0 0.3em 0 0;
 `;
 
 const ParticipantPhoto = styled.img`
   display: block;
-  margin-right: 0.8em;
+  margin-right: 0.5em;
   width: 80px;
   flex: none;
   border-radius: 100%;
@@ -92,27 +108,33 @@ const ParticipantName = styled.h2`
 const MarksWrapper = styled.div`
   flex: 1;
   display: flex;
+  margin: 0 auto;
+  
+  & > * {
+    flex: 1;
+  }
   
   @media(max-width: 1200px) {
     flex-direction: column;
+    max-width: 400px;
   }
 `;
 
 const Mark = styled.div`
   text-align: center;
   font-weight: ${props => props.total ? "bold" : "normal"};
-  flex: 1;
-  
-  &:not(:last-child) {
-    margin-right: 0.2em;
-  }
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  height: 100%;
+  margin: 0 0.2em;
   
   @media(max-width: 1200px) {
-    width: 100%;
-    display: flex;
     align-items: center;
     flex-direction: row-reverse;
     justify-content: center;
+    flex: 1;
+    margin: 0.2em 0;
   }
 `;
 
@@ -148,6 +170,22 @@ const MobileContent = styled.section`
   }
 `;
 
+const Categories = ({ categories }) => (
+  <nav>
+    <CategoriesList>
+      {Object.values(categories).map((category, i) => (
+        <CategoryItem key={i}>
+          <NavLink to={category.url} activeStyle={{ color: "white" }}>{category.title}</NavLink>
+        </CategoryItem>
+      ))}
+
+      <CategoryItem>
+        <NavLink to="grand-prix" activeStyle={{ color: "white" }}>Гран-при</NavLink>
+      </CategoryItem>
+    </CategoriesList>
+  </nav>
+);
+
 const Participants = ({ participants, category }) => (
   <ParticipantList>
     {participants.map((participant, i) => (
@@ -170,25 +208,29 @@ const Participant = ({ i, participant, category }) => (
     <Marks category={categories[category]} marks={participant.marks[category]}/>
 
     <MobileContent>
-      <Toggle title="Фотографии">
+      <ToggleCaption title="Фотографии">
         <ParticipantPhotos participant={participant} category={category}/>
-      </Toggle>
+      </ToggleCaption>
     </MobileContent>
   </ParticipantArticle>
 );
 
 const Marks = ({ category, marks }) => (
   <MarksWrapper>
-    {Object.keys(marks).map((judge, i) => (
-      <Mark key={i}>
-        <MarkValue>{marks[judge].reduce((sum, n) => sum + n, 0)}</MarkValue>
-        <MarkLabel>{judge}</MarkLabel>
-      </Mark>
+    {Object.keys(marks.judges).map((judge, i) => (
+      <ToggleCaption key={i} title={
+        <Mark>
+          <MarkValue>{marks.judges[judge].total_judge}</MarkValue>
+          <MarkLabel>{judge}</MarkLabel>
+        </Mark>
+      }>
+        <CriteriaMarks/>
+      </ToggleCaption>
     ))}
 
     <Mark total>
       <MarkValue>
-        {Object.values(marks).map(judge => judge.reduce((sum, n) => sum + n, 0)).reduce((sum, n) => sum + n, 0)}
+        {marks.total_category}
       </MarkValue>
       <MarkLabel>Итого</MarkLabel>
     </Mark>
@@ -196,14 +238,6 @@ const Marks = ({ category, marks }) => (
 );
 
 class ParticipantsTable extends Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      participants: []
-    };
-  }
-
   // compare_participants = (a, b) => {
   //   const { category } = this.props;
   //
@@ -222,11 +256,14 @@ class ParticipantsTable extends Component {
     return (
       <Container>
         <Router>
+          <Categories categories={categories}/>
+
           <Switch>
-            <Route path="/lips">
-              <Caption>{categories[1].title}</Caption>
-              <Participants participants={this.props.participants} category={1}/>
-            </Route>x
+            {Object.keys(categories).map((id) => (
+              <Route key={id} path={`/${categories[id].url}`}>
+                <Participants participants={this.props.participants} category={id}/>
+              </Route>
+            ))}
           </Switch>
         </Router>
       </Container>

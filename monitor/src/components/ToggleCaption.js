@@ -9,24 +9,44 @@ const CaptionButton = styled.button`
   padding: 0;
   display: flex;
   align-items: center;
+  justify-content: center;
+  
+  @media(max-width: 1200px) {
+    border-bottom: 1px solid rgba(100, 100, 100, 0.4);
+    padding: 0.2em;
+    margin: 0;
+    cursor: pointer;
+    
+    &:hover {
+      background-color: rgba(100, 100, 100, 0.4);
+    }
+  }
 `;
 
 const MarkerWrapper = styled.span`
   font-size: 0.5em;
   margin-right: 0.5em;
+  
+  @media(min-width: 1200px) {
+    display: none;
+  }
 `;
 
 const Content = styled.div`
-  display: ${props => props.visible ? 'block' : 'none'};
+  display: none;
+
+  @media(max-width: 1200px) {
+    display: ${props => props.visible ? 'block' : 'none'};
+  }
 `;
 
-const Marker = ({isOpen}) => (
+const Marker = ({ isOpen }) => (
   <MarkerWrapper>
     {isOpen ? '▼' : '▷'}
   </MarkerWrapper>
 );
 
-class Toggle extends Component {
+class ToggleCaption extends Component {
   state = {
     isOpen: false
   };
@@ -40,7 +60,10 @@ class Toggle extends Component {
   render() {
     return (
       <>
-        <CaptionButton onClick={this.toggleState}><Marker isOpen={this.state.isOpen}/> {this.props.title}</CaptionButton>
+        <CaptionButton onClick={this.toggleState}>
+          <Marker isOpen={this.state.isOpen}/>
+          {this.props.title}
+        </CaptionButton>
 
         <Content visible={this.state.isOpen}>
           {this.props.children}
@@ -48,6 +71,6 @@ class Toggle extends Component {
       </>
     );
   }
-};
+}
 
-export default Toggle;
+export default ToggleCaption;
