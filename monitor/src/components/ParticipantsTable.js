@@ -118,7 +118,7 @@ const MarksWrapper = styled.div`
   @media(max-width: 1200px) {
     margin: 0.5em auto;
     flex-direction: column;
-    max-width: 400px;
+    width: 70%;
   }
 `;
 

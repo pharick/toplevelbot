@@ -2,6 +2,7 @@ import React, {Component} from "react";
 import styled from 'styled-components';
 
 const CaptionButton = styled.button`
+  width: 100%;
   font-size: 1em;
   background: none;
   border: none;
@@ -9,7 +10,6 @@ const CaptionButton = styled.button`
   padding: 0;
   display: flex;
   align-items: center;
-  justify-content: center;
   
   @media(max-width: 1200px) {
     border-bottom: 1px solid rgba(100, 100, 100, 0.4);
