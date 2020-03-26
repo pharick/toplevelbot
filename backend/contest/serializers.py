@@ -19,28 +19,29 @@ class ParticipantSerializer(serializers.ModelSerializer):
 
     def get_marks(self, obj):
         marks = {}
+        marks['categories'] = {}
         total = 0
 
         for category in range(1, 4):
-            marks[category] = {}
-            marks[category]['judges'] = {}
+            marks['categories'][category] = {}
+            marks['categories'][category]['judges'] = {}
             total_category = 0
 
             for judge in Judge.objects.all():
                 judge_name = f'{judge.first_name} {judge.last_name}'
-                marks[category]['judges'][judge_name] = {}
+                marks['categories'][category]['judges'][judge_name] = {}
 
                 try:
                     judge_marks = Rating.objects.filter(category=category - 1, participant=obj.id, judge=judge.id).get().marks
                 except ObjectDoesNotExist:
                     judge_marks = []
                 finally:
-                    marks[category]['judges'][judge_name]['criteria'] = judge_marks
-                    marks[category]['judges'][judge_name]['total_judge'] = sum(judge_marks)
-                    total_category += marks[category]['judges'][judge_name]['total_judge']
+                    marks['categories'][category]['judges'][judge_name]['criteria'] = judge_marks
+                    marks['categories'][category]['judges'][judge_name]['total_judge'] = sum(judge_marks)
+                    total_category += marks['categories'][category]['judges'][judge_name]['total_judge']
 
-            marks[category]['total_category'] = total_category
-            total += marks[category]['total_category']
+            marks['categories'][category]['total_category'] = total_category
+            total += marks['categories'][category]['total_category']
 
             marks['total'] = total
 

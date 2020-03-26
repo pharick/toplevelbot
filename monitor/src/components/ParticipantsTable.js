@@ -30,12 +30,14 @@ const CategoryItem = styled.li`
     display: block;
     font-family: 'Rubik Mono One', sans-serif;
     font-size: 1.5em;
-    color: darkgray;
+    color: white;
+    opacity: 0.2;
     margin: 0 0.2em;
     padding: 0.2em;
     
     &:hover {
       background-color: rgba(100, 100, 100, 0.4);
+      opacity: 1;
     }
   }
 `;
@@ -45,7 +47,7 @@ const ParticipantList = styled.ol`
   padding: 0;
   margin: 0;
   
-  li:not(:last-child) {
+  & > li:not(:last-child) {
     border-bottom: 1px solid rgba(100, 100, 100, 0.4);
   }
 `;
@@ -108,13 +110,13 @@ const ParticipantName = styled.h2`
 const MarksWrapper = styled.div`
   flex: 1;
   display: flex;
-  margin: 0 auto;
   
   & > * {
     flex: 1;
   }
   
   @media(max-width: 1200px) {
+    margin: 0.5em auto;
     flex-direction: column;
     max-width: 400px;
   }
@@ -175,12 +177,12 @@ const Categories = ({ categories }) => (
     <CategoriesList>
       {Object.values(categories).map((category, i) => (
         <CategoryItem key={i}>
-          <NavLink to={category.url} activeStyle={{ color: "white" }}>{category.title}</NavLink>
+          <NavLink to={category.url} activeStyle={{ opacity: 1 }}>{category.title}</NavLink>
         </CategoryItem>
       ))}
 
       <CategoryItem>
-        <NavLink to="grand-prix" activeStyle={{ color: "white" }}>Гран-при</NavLink>
+        <NavLink to="grand-prix" activeStyle={{ opacity: 1 }}>Гран-при</NavLink>
       </CategoryItem>
     </CategoriesList>
   </nav>
@@ -188,10 +190,18 @@ const Categories = ({ categories }) => (
 
 class Participants extends Component {
   get_comparator = (category) => {
+    if (category === 0) {
+      return (a, b) => {
+        if (a.marks.total > b.marks.total) return -1;
+        if (a.marks.total === b.marks.total) return 0;
+        if (a.marks.total < b.marks.total) return 1;
+      };
+    }
+
     return (a, b) => {
-      if (a.marks[category].total_category > b.marks[category].total_category) return -1;
-      if (a.marks[category].total_category === b.marks[category].total_category) return 0;
-      if (a.marks[category].total_category < b.marks[category].total_category) return 1;
+      if (a.marks.categories[category].total_category > b.marks.categories[category].total_category) return -1;
+      if (a.marks.categories[category].total_category === b.marks.categories[category].total_category) return 0;
+      if (a.marks.categories[category].total_category < b.marks.categories[category].total_category) return 1;
     };
   };
 
@@ -217,7 +227,10 @@ const Participant = ({ i, participant, category }) => (
       <ParticipantName>{participant.first_name} {participant.last_name}</ParticipantName>
     </ParticipantInfo>
 
-    <Marks category={categories[category]} marks={participant.marks[category]}/>
+    {category === 0 ?
+      <TotalMarks categories={categories} marks={participant.marks}/> :
+      <Marks category={categories[category]} marks={participant.marks.categories[category]}/>
+    }
 
     <MobileContent>
       <ToggleCaption title="Фотографии">
@@ -236,13 +249,31 @@ const Marks = ({ category, marks }) => (
           <MarkLabel>{judge}</MarkLabel>
         </Mark>
       }>
-        <CriteriaMarks/>
+        <CriteriaMarks criteria={category.criteria} marks={marks.judges[judge].criteria}/>
       </ToggleCaption>
     ))}
 
     <Mark total>
       <MarkValue>
         {marks.total_category}
+      </MarkValue>
+      <MarkLabel>Итого</MarkLabel>
+    </Mark>
+  </MarksWrapper>
+);
+
+const TotalMarks = ({ categories, marks }) => (
+  <MarksWrapper>
+    {Object.keys(marks.categories).map((category, i) => (
+      <Mark key={i}>
+        <MarkValue>{marks.categories[category].total_category}</MarkValue>
+        <MarkLabel>{categories[category].title}</MarkLabel>
+      </Mark>
+    ))}
+
+    <Mark total>
+      <MarkValue>
+        {marks.total}
       </MarkValue>
       <MarkLabel>Итого</MarkLabel>
     </Mark>
@@ -262,6 +293,10 @@ class ParticipantsTable extends Component {
                 <Participants participants={this.props.participants} category={id}/>
               </Route>
             ))}
+
+            <Route key={0} path={`/grand-prix`}>
+              <Participants participants={this.props.participants} category={0}/>
+            </Route>
           </Switch>
         </Router>
       </Container>

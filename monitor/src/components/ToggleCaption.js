@@ -34,6 +34,7 @@ const MarkerWrapper = styled.span`
 
 const Content = styled.div`
   display: none;
+  font-size: 1rem;
 
   @media(max-width: 1200px) {
     display: ${props => props.visible ? 'block' : 'none'};
