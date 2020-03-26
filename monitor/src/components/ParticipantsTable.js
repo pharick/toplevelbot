@@ -186,15 +186,27 @@ const Categories = ({ categories }) => (
   </nav>
 );
 
-const Participants = ({ participants, category }) => (
-  <ParticipantList>
-    {participants.map((participant, i) => (
-      <li key={participant.id}>
-        <Participant i={i + 1} participant={participant} category={category}/>
-      </li>
-    ))}
-  </ParticipantList>
-);
+class Participants extends Component {
+  get_comparator = (category) => {
+    return (a, b) => {
+      if (a.marks[category].total_category > b.marks[category].total_category) return -1;
+      if (a.marks[category].total_category === b.marks[category].total_category) return 0;
+      if (a.marks[category].total_category < b.marks[category].total_category) return 1;
+    };
+  };
+
+  render() {
+    return (
+      <ParticipantList>
+        {this.props.participants.sort(this.get_comparator(this.props.category)).map((participant, i) => (
+          <li key={participant.id}>
+            <Participant i={i + 1} participant={participant} category={this.props.category}/>
+          </li>
+        ))}
+      </ParticipantList>
+    );
+  }
+}
 
 const Participant = ({ i, participant, category }) => (
   <ParticipantArticle>
@@ -238,20 +250,6 @@ const Marks = ({ category, marks }) => (
 );
 
 class ParticipantsTable extends Component {
-  // compare_participants = (a, b) => {
-  //   const { category } = this.props;
-  //
-  //   if (category) {
-  //     if (a.total_categories[category] > b.total_categories[category]) return -1;
-  //     if (a.total_categories[category] === b.total_categories[category]) return 0;
-  //     if (a.total_categories[category] < b.total_categories[category]) return 1;
-  //   }
-  //
-  //   if (a.total > b.total) return -1;
-  //   if (a.total === b.total) return 0;
-  //   if (a.total < b.total) return 1;
-  // };
-
   render() {
     return (
       <Container>
