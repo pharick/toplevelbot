@@ -28,7 +28,7 @@ class App extends Component {
   };
 
   async get_participants() {
-    const participants_response = await fetch('http://localhost/api/participants/');
+    const participants_response = await fetch('http://178.128.249.44/api/participants/');
     return await participants_response.json();
   }
 
