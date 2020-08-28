@@ -28,7 +28,7 @@ const CategoriesList = styled.ul`
 const CategoryItem = styled.li`
   a {
     display: block;
-    font-family: 'Rubik Mono One', sans-serif;
+    font-family: "Drunk Medium Desktop", sans-serif;
     font-size: 1.5em;
     color: white;
     opacity: 0.2;
@@ -70,8 +70,8 @@ const ParticipantInfo = styled.div`
   width: 500px;
   flex: none;
   margin: 0;
-  font-family: 'Rubik Mono One', sans-serif;
-  font-size: 1.2em;  
+  font-family: "Drunk Medium Desktop", sans-serif;
+  font-size: 1.8em;  
   
   @media(max-width: 1200px) {
     margin-top: 0.2em;
@@ -141,8 +141,8 @@ const Mark = styled.div`
 `;
 
 const MarkValue = styled.p`
-  font-family: 'Rubik Mono One', sans-serif;
-  font-size: 1.5em;
+  font-family: "Drunk Medium Desktop", sans-serif;
+  font-size: 1.8em;
   margin: 0;
   
   @media(max-width: 1200px) {
@@ -177,12 +177,12 @@ const Categories = ({ categories }) => (
     <CategoriesList>
       {Object.values(categories).map((category, i) => (
         <CategoryItem key={i}>
-          <NavLink to={category.url} activeStyle={{ opacity: 1 }}>{category.title}</NavLink>
+          <NavLink to={`/${category.url}`} activeStyle={{ opacity: 1 }}>{category.title}</NavLink>
         </CategoryItem>
       ))}
 
       <CategoryItem>
-        <NavLink to="grand-prix" activeStyle={{ opacity: 1 }}>Гран-при</NavLink>
+        <NavLink to="/grand-prix" activeStyle={{ opacity: 1 }}>Гран-при</NavLink>
       </CategoryItem>
     </CategoriesList>
   </nav>

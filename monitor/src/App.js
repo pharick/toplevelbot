@@ -4,8 +4,14 @@ import {createGlobalStyle} from 'styled-components';
 import ParticipantsTable from './components/ParticipantsTable';
 
 import bg from './bg.jpg';
+import drunkMediumDesktopFont from './Druk-Medium-Desktop.otf';
 
 const GlobalStyle = createGlobalStyle`
+  @font-face {
+     font-family: "Drunk Medium Desktop";
+     src: url(${drunkMediumDesktopFont}) format("opentype");
+  }
+  
   body {
     margin: 0;
     font-family: "Open Sans", sans-serif;
@@ -28,7 +34,7 @@ class App extends Component {
   };
 
   async get_participants() {
-    const participants_response = await fetch('http://178.128.249.44/api/participants/');
+    const participants_response = await fetch('http://localhost/api/participants/');
     return await participants_response.json();
   }
 
