@@ -46,10 +46,6 @@ const ParticipantList = styled.ol`
   list-style: none;
   padding: 0;
   margin: 0;
-  
-  & > li:not(:last-child) {
-    border-bottom: 1px solid rgba(100, 100, 100, 0.4);
-  }
 `;
 
 const ParticipantArticle = styled.article`
@@ -59,7 +55,7 @@ const ParticipantArticle = styled.article`
   
   @media(max-width: 1200px) {
     flex-direction: column;
-    padding: 0.5em 0;
+    margin: 0.5em 0;
   }
 `;
 
@@ -75,9 +71,10 @@ const ParticipantInfo = styled.div`
   font-size: 2em;  
   
   @media(max-width: 1200px) {
-    margin-top: 0.2em;
-    margin-right: 0;
+    margin: 0.2em 0 0.2em 0;
     width: auto;
+    justify-content: space-between;
+    width: 90%;
   }
 `;
 
@@ -169,10 +166,9 @@ const MarkLabel = styled.p`
   color: darkgray;
   
   @media(max-width: 1200px) {
-    flex: 2;
+    flex: 3;
     text-align: right;
     margin-right: 1em;
-    font-size: 0.7em;
   }
 `;
 
@@ -182,6 +178,11 @@ const MobileContent = styled.section`
   @media(max-width: 1200px) {
     display: block;
   }
+`;
+
+const CaptionMark = styled.p`
+  margin: 0;
+  margin-left: 0.5em;
 `;
 
 const Categories = ({ categories }) => (
@@ -231,25 +232,36 @@ class Participants extends Component {
 }
 
 const Participant = ({ i, participant, category }) => (
-  <ParticipantArticle>
-    <ParticipantInfo>
-      <ParticipantNumber>{i}</ParticipantNumber>
+    <ParticipantArticle>
+      <ToggleCaption key={i} display={true} title={
+        <ParticipantInfo>
+          <ParticipantNumber>{i}</ParticipantNumber>
 
-      <ParticipantPhoto src={participant.photo} alt={`${participant.first_name} ${participant.last_name}`}/>
-      <ParticipantName>{participant.first_name} {participant.last_name}</ParticipantName>
-    </ParticipantInfo>
+          <ParticipantPhoto src={participant.photo} alt={`${participant.first_name} ${participant.last_name}`}/>
+          <ParticipantName>{participant.first_name} {participant.last_name}</ParticipantName>
 
-    {category === 0 ?
-      <TotalMarks categories={categories} marks={participant.marks}/> :
-      <Marks category={categories[category]} marks={participant.marks.categories[category]}/>
-    }
+          <MobileContent>
+            <CaptionMark>
+              {category === 0 ?
+                participant.marks.total :
+                participant.marks.categories[category].total_category
+              }
+            </CaptionMark>
+          </MobileContent>
+        </ParticipantInfo>
+      }>
+        {category === 0 ?
+          <TotalMarks categories={categories} marks={participant.marks}/> :
+          <Marks category={categories[category]} marks={participant.marks.categories[category]}/>
+        }
 
-    <MobileContent>
-      <ToggleCaption title="Фотографии">
-        <ParticipantPhotos participant={participant} category={category}/>
+        <MobileContent>
+          <ToggleCaption title="Фотографии">
+            <ParticipantPhotos participant={participant} category={category}/>
+          </ToggleCaption>
+        </MobileContent>
       </ToggleCaption>
-    </MobileContent>
-  </ParticipantArticle>
+    </ParticipantArticle>
 );
 
 const Marks = ({ category, marks }) => (
@@ -261,7 +273,11 @@ const Marks = ({ category, marks }) => (
           <MarkLabel>{judge}</MarkLabel>
         </Mark>
       }>
-        <CriteriaMarks criteria={category.criteria} marks={marks.judges[judge].criteria}/>
+        <CriteriaMarks
+          criteria={category.criteria}
+          marks={marks.judges[judge].criteria}
+          message={marks.judges[judge].message}
+        />
       </ToggleCaption>
     ))}
 

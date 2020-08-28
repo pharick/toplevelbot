@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import styled from 'styled-components';
 
 const CaptionButton = styled.button`
-  width: 100%;
   font-size: 1em;
   background: none;
   border: none;
@@ -33,8 +32,9 @@ const MarkerWrapper = styled.span`
 `;
 
 const Content = styled.div`
-  display: none;
+  width: 100%;
   font-size: 1rem;
+  display: ${props => props.display ? 'block' : 'none'};
 
   @media(max-width: 1200px) {
     display: ${props => props.visible ? 'block' : 'none'};
@@ -66,7 +66,7 @@ class ToggleCaption extends Component {
           {this.props.title}
         </CaptionButton>
 
-        <Content visible={this.state.isOpen}>
+        <Content visible={this.state.isOpen} display={this.props.display ? 1 : 0}>
           {this.props.children}
         </Content>
       </>

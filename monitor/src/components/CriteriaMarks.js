@@ -23,16 +23,19 @@ const MarkValue = styled.p`
   margin: 0;
 `;
 
-const CriteriaMarks = ({ marks, criteria }) => {
+const CriteriaMarks = ({ marks, criteria, message }) => {
   return marks.length ? (
-    <MarkList>
-      {marks.map((mark, i) => (
-        <MarkItem key={i}>
-          <MarkLabel>{criteria[i]}:</MarkLabel>
-          <MarkValue>{mark}</MarkValue>
-        </MarkItem>
-      ))}
-    </MarkList>
+    <>
+      <MarkList>
+        {marks.map((mark, i) => (
+          <MarkItem key={i}>
+            <MarkLabel>{criteria[i]}:</MarkLabel>
+            <MarkValue>{mark}</MarkValue>
+          </MarkItem>
+        ))}
+      </MarkList>
+      <p><b>Отзыв:</b> {message}</p>
+    </>
   ) : (
     <p>Судья еще не выставил оценку.</p>
   );
