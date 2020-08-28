@@ -18,8 +18,7 @@ class ParticipantSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def get_marks(self, obj):
-        marks = {}
-        marks['categories'] = {}
+        marks = {'categories': {}}
         total = 0
 
         for category in range(1, 4):
@@ -32,12 +31,16 @@ class ParticipantSerializer(serializers.ModelSerializer):
                 marks['categories'][category]['judges'][judge_name] = {}
 
                 try:
-                    judge_marks = Rating.objects.filter(category=category - 1, participant=obj.id, judge=judge.id).get().marks
+                    rating = Rating.objects.filter(category=category - 1, participant=obj.id, judge=judge.id).get()
+                    judge_marks = rating.marks
+                    message = rating.message
                 except ObjectDoesNotExist:
                     judge_marks = []
+                    message = ''
                 finally:
                     marks['categories'][category]['judges'][judge_name]['criteria'] = judge_marks
                     marks['categories'][category]['judges'][judge_name]['total_judge'] = sum(judge_marks)
+                    marks['categories'][category]['judges'][judge_name]['message'] = message
                     total_category += marks['categories'][category]['judges'][judge_name]['total_judge']
 
             marks['categories'][category]['total_category'] = total_category

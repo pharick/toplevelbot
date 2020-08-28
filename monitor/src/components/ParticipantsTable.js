@@ -29,7 +29,7 @@ const CategoryItem = styled.li`
   a {
     display: block;
     font-family: "Drunk Medium Desktop", sans-serif;
-    font-size: 1.5em;
+    font-size: 2em;
     color: white;
     opacity: 0.2;
     margin: 0 0.2em;
@@ -70,11 +70,13 @@ const ParticipantInfo = styled.div`
   width: 500px;
   flex: none;
   margin: 0;
+  margin-right: 0.5em;
   font-family: "Drunk Medium Desktop", sans-serif;
-  font-size: 1.8em;  
+  font-size: 2em;  
   
   @media(max-width: 1200px) {
     margin-top: 0.2em;
+    margin-right: 0;
     width: auto;
   }
 `;
@@ -129,6 +131,7 @@ const Mark = styled.div`
   flex-direction: column;
   justify-content: flex-start;
   height: 100%;
+  width: 100%;
   margin: 0 0.2em;
   
   @media(max-width: 1200px) {
@@ -142,7 +145,7 @@ const Mark = styled.div`
 
 const MarkValue = styled.p`
   font-family: "Drunk Medium Desktop", sans-serif;
-  font-size: 1.8em;
+  font-size: 2.5em;
   margin: 0;
   
   @media(max-width: 1200px) {
@@ -154,7 +157,7 @@ const MarkValue = styled.p`
 
 const MarkLabel = styled.p`
   margin: 0;
-  font-size: 0.7em;
+  font-size: 1em;
   color: darkgray;
   
   @media(max-width: 1200px) {

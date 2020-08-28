@@ -1,10 +1,10 @@
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
-from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler
+from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
 
 from ..api import Api
 from ..settings import separator
 
-CATEGORY, NUMBER, CRITERION, RESUME = range(4)  # Стадии оценки
+CATEGORY, NUMBER, CRITERION, RESUME, COMMENT = range(5)  # Стадии оценки
 
 # Номинации
 LIPS, EYELIDS, EYEBROWS = range(3)
@@ -230,22 +230,11 @@ def resume(update, context):
     query = update.callback_query
     mark = int(query.data)
 
+    judge = context.user_data['judge']
     participant = context.chat_data['participant']
     marks = context.chat_data['marks']
     marks.append(mark)
-
-    judge = context.user_data['judge']
     category_number = context.chat_data['category']
-
-    rating = {
-        'category': category_number,
-        'participant': participant['id'],
-        'judge': judge['id'],
-        'marks': marks,
-    }
-
-    Api.post('ratings', rating)
-
     criteria = context.chat_data['criteria']
 
     message = f'Категория *{category_names[category_number]}*\n'\
@@ -255,13 +244,39 @@ def resume(update, context):
     for i in range(len(marks)):
         message += f'*{criteria[i]}:* {marks[i]}\n'
 
+    message += f'{separator}\n'
+    message += 'Не забудьте оставить участнику текстовый комментарий:\n'
+
     query.edit_message_text(
         message,
         parse_mode=ParseMode.MARKDOWN
     )
 
+    return COMMENT
+
+def comment(update, context):
+    category_number = context.chat_data['category']
+    participant = context.chat_data['participant']
+    judge = context.user_data['judge']
+    marks = context.chat_data['marks']
+    criteria = context.chat_data['criteria']
+
+    rating = {
+        'category': category_number,
+        'participant': participant['id'],
+        'judge': judge['id'],
+        'marks': marks,
+        'message': update.message.text
+    }
+
+    Api.post('ratings', rating)
+
     judge_name = f'{judge["first_name"]} {judge["last_name"]}'
     send_participant_notification(context.bot, participant['id'], judge_name, category_number, criteria, marks)
+
+    update.message.reply_markdown(
+        f'Оценка участника #{participant["number"]} закончена.'
+    )
 
     return ConversationHandler.END
 
@@ -279,7 +294,8 @@ rateConversationHandler = ConversationHandler(
         CATEGORY: [CallbackQueryHandler(category, pattern=r'\d+')],
         NUMBER: [CallbackQueryHandler(number, pattern=r'\d+')],
         CRITERION: [CallbackQueryHandler(criterion, pattern=r'\d+')],
-        RESUME: [CallbackQueryHandler(resume, pattern=r'\d+')]
+        RESUME: [CallbackQueryHandler(resume, pattern=r'\d+')],
+        COMMENT: [MessageHandler(Filters.text, comment)]
     },
 
     fallbacks=[CallbackQueryHandler(cancel, pattern=r'^CANCEL$')]

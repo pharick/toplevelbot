@@ -50,6 +50,7 @@ class Rating(models.Model):
     category = models.PositiveSmallIntegerField("Номинация", choices=CATEGORY_CHOICES)
 
     marks = ArrayField(models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)]), verbose_name="Оценки")
+    message = models.TextField("Текстовый комментарий")
 
     def __str__(self):
         return 'Категория: {}; Судья: {}; Участник: {}'.format(self.category, self.judge, self.participant)
