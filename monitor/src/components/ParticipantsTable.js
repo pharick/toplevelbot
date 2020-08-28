@@ -86,6 +86,10 @@ const ParticipantNumber = styled.p`
   flex: none;
   text-align: right;
   margin: 0 0.3em 0 0;
+  
+  @media(max-width: 1200px) {
+    width: auto;
+  }
 `;
 
 const ParticipantPhoto = styled.img`
@@ -107,6 +111,10 @@ const ParticipantName = styled.h2`
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
+  
+  @media(max-width: 1200px) {
+    font-size: 0.7em;
+  }
 `;
 
 const MarksWrapper = styled.div`
@@ -151,7 +159,7 @@ const MarkValue = styled.p`
   @media(max-width: 1200px) {
     flex: 1;
     text-align: left;
-    font-size: 1em;
+    font-size: 1.2em;
    }
 `;
 
@@ -164,6 +172,7 @@ const MarkLabel = styled.p`
     flex: 2;
     text-align: right;
     margin-right: 1em;
+    font-size: 0.7em;
   }
 `;
 
