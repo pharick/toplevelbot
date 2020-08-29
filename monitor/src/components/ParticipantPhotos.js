@@ -20,28 +20,28 @@ const PhotoCaption = styled.figcaption`
 
 const ParticipantPhotos = ({participant, category}) => (
   <section>
-    {participant.photo_lips_face_before && (!category || category == 1) &&
+    {participant.photo_lips_face_before && (!category || category === 1) &&
     <PhotoFigure>
       <img src={participant.photo_lips_face_before} alt="Лицо с губами до"/>
       <PhotoCaption>Лицо с губами до</PhotoCaption>
     </PhotoFigure>
     }
 
-    {participant.photo_lips_before && (!category || category == 1) &&
+    {participant.photo_lips_before && (!category || category === 1) &&
     <PhotoFigure>
       <img src={participant.photo_lips_before} alt="Губы до"/>
       <PhotoCaption>Губы до</PhotoCaption>
     </PhotoFigure>
     }
 
-    {participant.photo_lips_face_after && (!category || category == 1) &&
+    {participant.photo_lips_face_after && (!category || category === 1) &&
     <PhotoFigure>
       <img src={participant.photo_lips_face_after} alt="Лицо с губами после"/>
       <PhotoCaption>Лицо с губами после</PhotoCaption>
     </PhotoFigure>
     }
 
-    {participant.photo_lips_after && (!category || category == 1) &&
+    {participant.photo_lips_after && (!category || category === 1) &&
     <PhotoFigure>
       <img src={participant.photo_lips_after} alt="Губы после"/>
       <PhotoCaption>Губы после</PhotoCaption>
@@ -49,28 +49,28 @@ const ParticipantPhotos = ({participant, category}) => (
     }
 
 
-    {participant.photo_eyeline_face_before && (!category || category == 2) &&
+    {participant.photo_eyeline_face_before && (!category || category === 2) &&
     <PhotoFigure>
       <img src={participant.photo_eyeline_face_before} alt="Лицо с веками до"/>
       <PhotoCaption>Лицо с веками до</PhotoCaption>
     </PhotoFigure>
     }
 
-    {participant.photo_eyeline_before && (!category || category == 2) &&
+    {participant.photo_eyeline_before && (!category || category === 2) &&
     <PhotoFigure>
       <img src={participant.photo_eyeline_before} alt="Веки до"/>
       <PhotoCaption>Веки до</PhotoCaption>
     </PhotoFigure>
     }
 
-    {participant.photo_eyeline_face_after && (!category || category == 2) &&
+    {participant.photo_eyeline_face_after && (!category || category === 2) &&
     <PhotoFigure>
       <img src={participant.photo_eyeline_face_after} alt="Лицо с веками после"/>
       <PhotoCaption>Лицо с веками после</PhotoCaption>
     </PhotoFigure>
     }
 
-    {participant.photo_eyeline_after && (!category || category == 2) &&
+    {participant.photo_eyeline_after && (!category || category === 2) &&
     <PhotoFigure>
       <img src={participant.photo_eyeline_after} alt="Веки после"/>
       <PhotoCaption>Веки после</PhotoCaption>
@@ -78,28 +78,28 @@ const ParticipantPhotos = ({participant, category}) => (
     }
 
 
-    {participant.photo_brows_face_before && (!category || category == 3) &&
+    {participant.photo_brows_face_before && (!category || category === 3) &&
     <PhotoFigure>
       <img src={participant.photo_brows_face_before} alt="Лицо с бровями до"/>
       <PhotoCaption>Лицо с бровями до</PhotoCaption>
     </PhotoFigure>
     }
 
-    {participant.photo_brows_before && (!category || category == 3) &&
+    {participant.photo_brows_before && (!category || category === 3) &&
     <PhotoFigure>
       <img src={participant.photo_brows_before} alt="Брови до"/>
       <PhotoCaption>Брови до</PhotoCaption>
     </PhotoFigure>
     }
 
-    {participant.photo_brows_face_after && (!category || category == 3) &&
+    {participant.photo_brows_face_after && (!category || category === 3) &&
     <PhotoFigure>
       <img src={participant.photo_brows_face_after} alt="Лицо с бровями после"/>
       <PhotoCaption>Лицо с бровями после</PhotoCaption>
     </PhotoFigure>
     }
 
-    {participant.photo_brows_after && (!category || category == 3) &&
+    {participant.photo_brows_after && (!category || category === 3) &&
     <PhotoFigure>
       <img src={participant.photo_brows_after} alt="Брови после"/>
       <PhotoCaption>Брови после</PhotoCaption>
