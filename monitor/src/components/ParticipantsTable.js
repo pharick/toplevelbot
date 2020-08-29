@@ -127,6 +127,7 @@ const MarksWrapper = styled.div`
     margin: 0.5em auto;
     flex-direction: column;
     width: 70%;
+    align-items: stretch;
   }
 `;
 

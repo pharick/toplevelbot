@@ -275,7 +275,8 @@ def comment(update, context):
     send_participant_notification(context.bot, participant['id'], judge_name, category_number, criteria, marks)
 
     update.message.reply_markdown(
-        f'Оценка участника #{participant["number"]} закончена.'
+        f'Оценка участника #{participant["number"]} закончена.\n'
+        'Для оценки следующего участника введите команду /rate'
     )
 
     return ConversationHandler.END
