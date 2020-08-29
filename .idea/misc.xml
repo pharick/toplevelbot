@@ -3,5 +3,5 @@
   <component name="JavaScriptSettings">
     <option name="languageLevel" value="JSX" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.8.1 Docker Compose (backend at [/Users/artemforkunov/Projects/toplevelbot/docker-compose.yml])" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="Remote Python 3.8.1 Docker Compose (bot at [/Users/artemforkunov/Projects/toplevelbot/docker-compose.yml])" project-jdk-type="Python SDK" />
 </project>

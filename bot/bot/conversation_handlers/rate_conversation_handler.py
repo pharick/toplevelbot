@@ -63,7 +63,6 @@ marks_choices = [
     [InlineKeyboardButton('Отмена', callback_data='CANCEL')]
 ]
 
-
 # Проверка диапазона оценки
 def check_mark(mark):
     return 5 >= mark >= 0
@@ -230,7 +229,6 @@ def resume(update, context):
     query = update.callback_query
     mark = int(query.data)
 
-    judge = context.user_data['judge']
     participant = context.chat_data['participant']
     marks = context.chat_data['marks']
     marks.append(mark)
@@ -244,17 +242,21 @@ def resume(update, context):
     for i in range(len(marks)):
         message += f'*{criteria[i]}:* {marks[i]}\n'
 
+    cancel_choices = InlineKeyboardMarkup([[InlineKeyboardButton('Отмена', callback_data='CANCEL')]])
+
     message += f'{separator}\n'
-    message += 'Не забудьте оставить участнику текстовый комментарий:\n'
+    message += 'Оставьте участнику текстовый комментарий:\n'
 
     query.edit_message_text(
         message,
-        parse_mode=ParseMode.MARKDOWN
+        parse_mode=ParseMode.MARKDOWN,
+        reply_markup=cancel_choices
     )
 
     return COMMENT
 
 def comment(update, context):
+    comment_text = update.message.text
     category_number = context.chat_data['category']
     participant = context.chat_data['participant']
     judge = context.user_data['judge']
@@ -266,7 +268,7 @@ def comment(update, context):
         'participant': participant['id'],
         'judge': judge['id'],
         'marks': marks,
-        'message': update.message.text
+        'message': comment_text
     }
 
     Api.post('ratings', rating)
@@ -296,7 +298,7 @@ rateConversationHandler = ConversationHandler(
         NUMBER: [CallbackQueryHandler(number, pattern=r'\d+')],
         CRITERION: [CallbackQueryHandler(criterion, pattern=r'\d+')],
         RESUME: [CallbackQueryHandler(resume, pattern=r'\d+')],
-        COMMENT: [MessageHandler(Filters.text, comment)]
+        COMMENT: [MessageHandler(Filters.text & ~Filters.command, comment, )]
     },
 
     fallbacks=[CallbackQueryHandler(cancel, pattern=r'^CANCEL$')]
