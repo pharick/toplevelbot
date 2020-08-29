@@ -117,6 +117,7 @@ const ParticipantName = styled.h2`
 const MarksWrapper = styled.div`
   flex: 1;
   display: flex;
+  align-items: flex-start;
   
   & > * {
     flex: 1;
