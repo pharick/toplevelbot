@@ -8,6 +8,10 @@ class Judge(models.Model):
     first_name = models.CharField("Имя", max_length=100)
     last_name = models.CharField("Фамилия", max_length=100)
 
+    class Meta:
+        verbose_name = 'судья'
+        verbose_name_plural = 'судьи'
+
     def __str__(self):
         return '{} {}'.format(self.first_name, self.last_name)
 
@@ -42,6 +46,8 @@ class Participant(models.Model):
     photo_brows_after = models.ImageField("Фото бровей после", upload_to='photos', blank=True)
 
     class Meta:
+        verbose_name = 'участник'
+        verbose_name_plural = 'участники'
         ordering = ['number']
 
     def __str__(self):
@@ -61,6 +67,10 @@ class Rating(models.Model):
 
     marks = ArrayField(models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)]), verbose_name="Оценки")
     message = models.TextField("Текстовый комментарий")
+
+    class Meta:
+        verbose_name = 'оценка'
+        verbose_name_plural = 'оценки'
 
     def __str__(self):
         return 'Категория: {}; Судья: {}; Участник: {}'.format(self.category, self.judge, self.participant)
