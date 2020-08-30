@@ -1,5 +1,6 @@
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
+from urllib import request
 
 from ..api import Api
 from ..settings import separator
@@ -104,6 +105,29 @@ def send_participant_notification(bot, participant_id, judge_name, category_numb
 
     bot.send_message(chat_id, message, ParseMode.MARKDOWN)
 
+def sent_participant_photos(bot, chat_id, participant_number, category_number):
+    participant = Api.get('participants', args={'number': participant_number})
+    if participant.status_code != 200:
+        return
+    participant = participant.json()[0]
+    if not participant:
+        return
+
+    if category_number == LIPS:
+        if participant['photo_lips_face_before']:
+            bot.send_photo(chat_id, request.urlopen(participant['photo_lips_face_before']), caption='Лицо с губами до')
+        if participant['photo_lips_before']:
+            bot.send_photo(chat_id, request.urlopen(participant['photo_lips_before']), caption='Губы до')
+    elif category_number == EYELIDS:
+        if participant['photo_eyeline_face_before']:
+            bot.send_photo(chat_id, request.urlopen(participant['photo_eyeline_face_before']), caption='Лицо с веками до')
+        if participant['photo_eyeline_before']:
+            bot.send_photo(chat_id, request.urlopen(participant['photo_eyeline_before']), caption='Веки до')
+    elif category_number == EYEBROWS:
+        if participant['photo_brows_face_before']:
+            bot.send_photo(chat_id, request.urlopen(participant['photo_brows_face_before']), caption='Лицо с бровями до')
+        if participant['photo_brows_before']:
+            bot.send_photo(chat_id, request.urlopen(participant['photo_brows_before']), caption='Брови до')
 
 # 1. Начальная стадия
 def rate(update, context):
@@ -178,6 +202,8 @@ def number(update, context):
 
     category_number = context.chat_data['category']
     criteria = context.chat_data['criteria']
+
+    sent_participant_photos(context.bot, update.effective_chat.id, participant_number, category_number)
 
     query.edit_message_text(
         f'Категория *{category_names[category_number]}*\n'
