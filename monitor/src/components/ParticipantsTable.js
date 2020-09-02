@@ -283,6 +283,11 @@ const Marks = ({ category, marks }) => (
       </ToggleCaption>
     ))}
 
+    <Mark>
+      <MarkValue>{marks.doctor}</MarkValue>
+      <MarkLabel>Оценка доктора</MarkLabel>
+    </Mark>
+
     <Mark total>
       <MarkValue>
         {marks.total_category}
