@@ -34,14 +34,14 @@ class App extends Component {
   };
 
   async get_participants() {
-    const participants_response = await fetch('http://localhost/api/participants/');
+    const participants_response = await fetch('/api/participants/');
     return await participants_response.json();
   }
 
   async componentDidMount() {
     const participants = await this.get_participants();
     this.setState({ participants });
-    // this.timer = setInterval(() => this.get_participants(), 10000);
+    this.timer = setInterval(() => this.get_participants(), 60000);
   }
 
   render() {
