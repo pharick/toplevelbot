@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from django.core.exceptions import ObjectDoesNotExist
 
-from .models import Judge, Participant, Rating, ParticipantSession
+from .models import Judge, Participant, Rating, DoctorRating, ParticipantSession
 
 
 class JudgeSerializer(serializers.ModelSerializer):
@@ -58,6 +58,12 @@ class RatingSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Rating
+        fields = '__all__'
+
+
+class DoctorRatingSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = DoctorRating
         fields = '__all__'
 
 

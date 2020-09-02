@@ -1,7 +1,7 @@
 import bot.handlers as handlers
 from bot import Bot
 
-from bot.conversation_handlers import rateConversationHandler
+from bot.conversation_handlers import rateConversationHandler, doctorRateConversationHandler
 
 
 def main():
@@ -11,6 +11,7 @@ def main():
 
     bot.add_handler(handlers.startHandler)
     bot.add_handler(rateConversationHandler)
+    bot.add_handler(doctorRateConversationHandler)
 
     bot.loop()
 

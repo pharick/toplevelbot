@@ -13,6 +13,7 @@ def start(update, context):
     if judge.status_code == 200:
         context.user_data['is_judge'] = True
         context.user_data['judge'] = judge.json()
+        context.user_data['is_doctor'] = context.user_data['judge']['is_doctor']
     else:
         context.user_data['is_judge'] = False
 
@@ -31,10 +32,21 @@ def start(update, context):
         context.user_data['is_participant'] = False
 
     is_judge = context.user_data['is_judge']
+    is_doctor = context.user_data['is_doctor']
     is_participant = context.user_data['is_participant']
 
     # выводим приветствие (или не выводим)
-    if is_judge:
+    if is_judge and is_doctor:
+        judge = context.user_data['judge']
+
+        reply_markdown = f'*Привет, {judge["first_name"]}!*\n' \
+                         'Вы доктор конкурса.\n' \
+                         f'{separator}\n' \
+                         '*Команды:*\n' \
+                         '/doctor - оценить участника'
+
+        update.message.reply_markdown(reply_markdown)
+    elif is_judge:
         judge = context.user_data['judge']
 
         reply_markdown = f'*Привет, {judge["first_name"]}!*\n' \

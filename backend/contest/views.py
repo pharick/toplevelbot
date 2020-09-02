@@ -1,7 +1,8 @@
 from rest_framework import viewsets, filters
 
-from .models import Judge, Participant, Rating, ParticipantSession
-from .serializers import JudgeSerializer, ParticipantSerializer, RatingSerializer, ParticipantSessionSerializer
+from .models import Judge, Participant, Rating, DoctorRating, ParticipantSession
+from .serializers import (JudgeSerializer, ParticipantSerializer, RatingSerializer,
+                          DoctorRatingSerializer, ParticipantSessionSerializer)
 
 
 class JudgeViewSet(viewsets.ReadOnlyModelViewSet):
@@ -20,6 +21,12 @@ class ParticipantViewSet(viewsets.ReadOnlyModelViewSet):
 class RatingViewSet(viewsets.ModelViewSet):
     serializer_class = RatingSerializer
     queryset = Rating.objects.all()
+    filterset_fields = ['judge', 'category']
+
+
+class DoctorRatingViewSet(viewsets.ModelViewSet):
+    serializer_class = DoctorRatingSerializer
+    queryset = DoctorRating.objects.all()
     filterset_fields = ['judge', 'category']
 
 

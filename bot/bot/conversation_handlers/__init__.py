@@ -1,1 +1,2 @@
 from .rate_conversation_handler import rateConversationHandler
+from .doctor_rate_conversation_handler import doctorRateConversationHandler

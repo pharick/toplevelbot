@@ -105,6 +105,7 @@ def send_participant_notification(bot, participant_id, judge_name, category_numb
 
     bot.send_message(chat_id, message, ParseMode.MARKDOWN)
 
+
 def sent_participant_photos(bot, chat_id, participant_number, category_number):
     participant = Api.get('participants', args={'number': participant_number})
     if participant.status_code != 200:
@@ -129,10 +130,11 @@ def sent_participant_photos(bot, chat_id, participant_number, category_number):
         if participant['photo_brows_before']:
             bot.send_photo(chat_id, request.urlopen(participant['photo_brows_before']), caption='Брови до')
 
+
 # 1. Начальная стадия
 def rate(update, context):
-    # Проверяем, что пользователь является судьей
-    if not context.user_data['is_judge']:
+    # Проверяем, что пользователь является судьей и не является доктором
+    if not context.user_data['is_judge'] or context.user_data['is_doctor']:
         return ConversationHandler.END
 
     # Формируем клавиатуру для выбора номинации
