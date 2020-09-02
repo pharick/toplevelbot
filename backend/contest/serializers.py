@@ -27,6 +27,9 @@ class ParticipantSerializer(serializers.ModelSerializer):
             total_category = 0
 
             for judge in Judge.objects.all():
+                if judge.is_doctor:
+                    continue
+
                 judge_name = f'{judge.first_name} {judge.last_name}'
                 marks['categories'][category]['judges'][judge_name] = {}
 
