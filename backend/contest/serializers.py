@@ -43,6 +43,15 @@ class ParticipantSerializer(serializers.ModelSerializer):
                     marks['categories'][category]['judges'][judge_name]['message'] = message
                     total_category += marks['categories'][category]['judges'][judge_name]['total_judge']
 
+            try:
+                doctor_rating = DoctorRating.objects.filter(category=category - 1, participant=obj.id).get()
+                doctor_mark = doctor_rating.mark
+            except ObjectDoesNotExist:
+                doctor_mark = 0
+            finally:
+                marks['categories'][category]['doctor'] = doctor_mark
+                total_category += doctor_mark
+
             marks['categories'][category]['total_category'] = total_category
             total += marks['categories'][category]['total_category']
 
