@@ -24,13 +24,6 @@ class Participant(models.Model):
     photo = models.ImageField('Фотография', upload_to='photos')
     number = models.PositiveIntegerField('Номер участника', unique=True)
 
-    complexity_lips = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
-    complexity_eyeline = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
-    complexity_brows = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
-    asymmetry_lips = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
-    asymmetry_eyeline = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
-    asymmetry_brows = models.PositiveSmallIntegerField(validators=[MinValueValidator(0), MaxValueValidator(5)])
-
     photo_lips_face_before = models.ImageField('Фото лица с губами до', upload_to='photos', blank=True)
     photo_lips_before = models.ImageField('Фото губ до', upload_to='photos', blank=True)
     photo_lips_face_after = models.ImageField('Фото лица с губами после', upload_to='photos', blank=True)
@@ -88,7 +81,7 @@ class DoctorRating(models.Model):
     ]
     category = models.PositiveSmallIntegerField('Номинация', choices=CATEGORY_CHOICES)
 
-    mark = models.SmallIntegerField(validators=[MinValueValidator(-2), MaxValueValidator(0)])
+    mark = models.SmallIntegerField(validators=[MinValueValidator(-2), MaxValueValidator(0)], verbose_name='Оценка')
 
     class Meta:
         verbose_name = 'оценка доктора'
