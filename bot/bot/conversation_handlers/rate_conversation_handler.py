@@ -89,7 +89,7 @@ def make_participant_choices(participants, line_len):
 
 
 # Отправка уведомления об оценке участнику
-def send_participant_notification(bot, participant_id, judge_name, category_number, criteria, marks):
+def send_participant_notification(bot, participant_id, judge_name, category_number, criteria, marks, message_text):
     participant_session = Api.get(f'participant-sessions/{participant_id}')
 
     if participant_session.status_code != 200:
@@ -104,7 +104,10 @@ def send_participant_notification(bot, participant_id, judge_name, category_numb
         message += f'*{criteria[i]}:* {marks[i]}\n'
 
     message += f'{separator}\n' \
-               f'*Итого:* {sum(marks)}'
+               f'*Итого:* {sum(marks)}' \
+               f'{separator}\n' \
+               f'*Отзыв:*\n' \
+               f'{message_text}'
 
     bot.send_message(chat_id, message, ParseMode.MARKDOWN)
 
@@ -305,7 +308,7 @@ def comment(update, context):
     Api.post('ratings', rating)
 
     judge_name = f'{judge["first_name"]} {judge["last_name"]}'
-    send_participant_notification(context.bot, participant['id'], judge_name, category_number, criteria, marks)
+    send_participant_notification(context.bot, participant['id'], judge_name, category_number, criteria, marks, comment_text)
 
     update.message.reply_markdown(
         f'Оценка участника #{participant["number"]} закончена.\n'
