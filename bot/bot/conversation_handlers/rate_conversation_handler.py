@@ -97,16 +97,16 @@ def send_participant_notification(bot, participant_id, judge_name, category_numb
 
     chat_id = participant_session.json()['chat_id']
 
-    message = f'Вас оценил судья {judge_name} в категории *{category_names[category_number]}*\n' \
+    message = f'Вас оценил судья *{judge_name}* в категории *{category_names[category_number]}*:\n' \
               f'{separator}\n'
 
     for i in range(len(marks)):
-        message += f'*{criteria[i]}:* {marks[i]}\n'
+        message += f'{criteria[i]}: *{marks[i]}*\n'
 
     message += f'{separator}\n' \
                f'*Итого:* {sum(marks)}' \
                f'{separator}\n' \
-               f'*Отзыв:*\n' \
+               f'*Комментарий:*\n' \
                f'{message_text}'
 
     bot.send_message(chat_id, message, ParseMode.MARKDOWN)
