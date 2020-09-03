@@ -104,7 +104,7 @@ def send_participant_notification(bot, participant_id, judge_name, category_numb
         message += f'{criteria[i]}: *{marks[i]}*\n'
 
     message += f'{separator}\n' \
-               f'*Итого:* {sum(marks)}' \
+               f'*Итого:* {sum(marks)}\n' \
                f'{separator}\n' \
                f'*Комментарий:*\n' \
                f'{message_text}'
