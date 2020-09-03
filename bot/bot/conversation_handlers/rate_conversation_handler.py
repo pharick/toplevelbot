@@ -103,6 +103,9 @@ def send_participant_notification(bot, participant_id, judge_name, category_numb
     for i in range(len(marks)):
         message += f'*{criteria[i]}:* {marks[i]}\n'
 
+    message += f'{separator}\n' \
+               f'*Итого:* {sum(marks)}'
+
     bot.send_message(chat_id, message, ParseMode.MARKDOWN)
 
 
