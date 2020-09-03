@@ -44,7 +44,7 @@ def make_participant_choices(participants, line_len):
 
 
 # Отправка уведомления об оценке участнику
-def send_participant_notification(bot, participant_id, judge_name, category_number, criteria, marks):
+def send_participant_notification(bot, participant_id, category_number, mark):
     participant_session = Api.get(f'participant-sessions/{participant_id}')
 
     if participant_session.status_code != 200:
@@ -52,11 +52,10 @@ def send_participant_notification(bot, participant_id, judge_name, category_numb
 
     chat_id = participant_session.json()['chat_id']
 
-    message = f'Вас оценил судья {judge_name} в категории *{category_names[category_number]}*\n' \
+    message = f'Вас оценил санитарный врач в категории *{category_names[category_number]}*\n' \
               f'{separator}\n'
 
-    for i in range(len(marks)):
-        message += f'*{criteria[i]}:* {marks[i]}\n'
+    message += f'*Оценка:* {mark}\n'
 
     bot.send_message(chat_id, message, ParseMode.MARKDOWN)
 
@@ -151,6 +150,8 @@ def mark(update, context):
     }
 
     Api.post('doctor-ratings', rating)
+
+    send_participant_notification(context.bot, participant['id'], category_number, mark_value)
 
     query.edit_message_text(
         f'Вы оценили участника #{participant["number"]}.',

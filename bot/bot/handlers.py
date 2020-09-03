@@ -40,7 +40,7 @@ def start(update, context):
         judge = context.user_data['judge']
 
         reply_markdown = f'*Привет, {judge["first_name"]}!*\n' \
-                         'Вы доктор конкурса.\n' \
+                         'Вы санитарный врач конкурса.\n' \
                          f'{separator}\n' \
                          '*Команды:*\n' \
                          '/doctor - оценить участника'
