@@ -106,7 +106,6 @@ const ParticipantPhoto = styled.img`
 const ParticipantName = styled.h2`
   font-size: 1em;
   line-height: 1em;
-  font-weight: bold;
   margin: 0;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -136,7 +135,6 @@ const MarksWrapper = styled.div`
 
 const Mark = styled.div`
   text-align: center;
-  font-weight: ${props => props.total ? "bold" : "normal"};
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
