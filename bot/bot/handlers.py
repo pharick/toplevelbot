@@ -16,6 +16,7 @@ def start(update, context):
         context.user_data['is_doctor'] = context.user_data['judge']['is_doctor']
     else:
         context.user_data['is_judge'] = False
+        context.user_data['is_doctor'] = False
 
     if participant.status_code == 200:
         context.user_data['is_participant'] = True
