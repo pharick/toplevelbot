@@ -53,7 +53,7 @@ class Rating(models.Model):
     judge = models.ForeignKey(Judge, verbose_name='Судья', on_delete=models.CASCADE)
 
     CATEGORY_CHOICES = [
-        (0, 'Акварельные губы'),
+        (0, 'Растушевка губ'),
         (1, 'Веки с растушевкой'),
         (2, 'Пудровые брови')
     ]
@@ -75,7 +75,7 @@ class DoctorRating(models.Model):
     judge = models.ForeignKey(Judge, verbose_name='Судья', on_delete=models.CASCADE)
 
     CATEGORY_CHOICES = [
-        (0, 'Акварельные губы'),
+        (0, 'Растушевка губ'),
         (1, 'Веки с растушевкой'),
         (2, 'Пудровые брови')
     ]

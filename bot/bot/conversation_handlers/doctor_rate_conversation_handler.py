@@ -9,7 +9,7 @@ CATEGORY, NUMBER, MARK = range(3)  # Стадии оценки
 
 # Номинации
 LIPS, EYELIDS, EYEBROWS = range(3)
-category_names = {LIPS: 'Акварельные губы', EYELIDS: 'Веки с растушевкой', EYEBROWS: 'Пудровые брови'}
+category_names = {LIPS: 'Растушевка губ', EYELIDS: 'Веки с растушевкой', EYEBROWS: 'Пудровые брови'}
 
 # Клавиатура для выбора оценки
 marks_choices = [
@@ -68,7 +68,7 @@ def rate(update, context):
 
     # Формируем клавиатуру для выбора номинации
     category_choices = InlineKeyboardMarkup([
-        [InlineKeyboardButton('Акварельные губы', callback_data='0')],
+        [InlineKeyboardButton('Растушевка губ', callback_data='0')],
         [InlineKeyboardButton('Веки с растушевкой', callback_data='1')],
         [InlineKeyboardButton('Пудровые брови', callback_data='2')],
         [InlineKeyboardButton('Отмена', callback_data='CANCEL')]

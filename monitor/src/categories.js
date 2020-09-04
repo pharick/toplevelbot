@@ -1,6 +1,6 @@
 const categories = {
   1: {
-    title: 'Акварельные губы',
+    title: 'Растушевка губ',
     url: 'lips',
     criteria: [
       'Впечатление',
