@@ -94,6 +94,7 @@ const ParticipantPhotoWrapper = styled.div`
   border-radius: 100%;
   margin-right: 0.5em;
   overflow: hidden;
+  flex-shrink: 0;
 `;
 
 const ParticipantPhoto = styled.img`
