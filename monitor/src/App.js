@@ -34,7 +34,7 @@ class App extends Component {
   };
 
   async get_participants() {
-    const participants_response = await fetch('http://toplevel.space/api/participants/');
+    const participants_response = await fetch('/api/participants/');
     const participants = await participants_response.json();
     this.setState({ participants });
   }
