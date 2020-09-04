@@ -73,32 +73,33 @@ const ParticipantInfo = styled.div`
   @media(max-width: 1200px) {
     margin: 0.2em 0 0.2em 0;
     width: auto;
-    justify-content: space-between;
     width: 90%;
   }
 `;
 
 const ParticipantNumber = styled.p`
-  width: 80px;
+  min-width: 40px;
   flex: none;
   text-align: right;
   margin: 0 0.3em 0 0;
   
   @media(max-width: 1200px) {
-    width: auto;
+    min-width: 35px;
   }
 `;
 
-const ParticipantPhoto = styled.img`
-  display: block;
-  margin-right: 0.5em;
+const ParticipantPhotoWrapper = styled.div`
   width: 80px;
-  flex: none;
+  height: 80px;
   border-radius: 100%;
-  
-  @media(max-width: 1200px) {
-    margin-right: 0.5em;
-  }
+  margin-right: 0.5em;
+  overflow: hidden;
+`;
+
+const ParticipantPhoto = styled.img`
+  object-fit: cover;
+  width: 100%;
+  height: 100%;
 `;
 
 const ParticipantName = styled.h2`
@@ -111,6 +112,7 @@ const ParticipantName = styled.h2`
   
   @media(max-width: 1200px) {
     font-size: 0.7em;
+    text-align: left;
   }
 `;
 
@@ -184,7 +186,6 @@ const MobileContent = styled.section`
 
 const CaptionMark = styled.p`
   margin: 0;
-  margin-left: 0.5em;
 `;
 
 const Categories = ({ categories }) => (
@@ -239,10 +240,12 @@ const Participant = ({ i, participant, category }) => (
         <ParticipantInfo>
           <ParticipantNumber>{i}</ParticipantNumber>
 
-          <ParticipantPhoto src={participant.photo} alt={`${participant.first_name} ${participant.last_name}`}/>
+          <ParticipantPhotoWrapper>
+            <ParticipantPhoto src={participant.photo} alt={`${participant.first_name} ${participant.last_name}`}/>
+          </ParticipantPhotoWrapper>
           <ParticipantName>{participant.first_name} {participant.last_name}</ParticipantName>
 
-          <MobileContent>
+          <MobileContent style={{'margin-left': 'auto'}}>
             <CaptionMark>
               {category === 0 ?
                 participant.marks.total :
@@ -285,7 +288,7 @@ const Marks = ({ category, marks }) => (
 
     <Mark>
       <MarkValue>{marks.doctor}</MarkValue>
-      <MarkLabel>Оценка доктора</MarkLabel>
+      <MarkLabel>Санитарный врач</MarkLabel>
     </Mark>
 
     <Mark total>
