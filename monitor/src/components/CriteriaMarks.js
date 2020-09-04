@@ -12,7 +12,6 @@ const MarkItem = styled.li`
 `;
 
 const MarkLabel = styled.p`
-  font-weight: bold;
   flex: 2;
   text-align: right;
   margin: 0 0.5em 0 0;
@@ -21,6 +20,7 @@ const MarkLabel = styled.p`
 const MarkValue = styled.p`
   flex: 1;
   margin: 0;
+  font-weight: bold;
 `;
 
 const CriteriaMarks = ({ marks, criteria, message }) => {
@@ -34,7 +34,7 @@ const CriteriaMarks = ({ marks, criteria, message }) => {
           </MarkItem>
         ))}
       </MarkList>
-      <p><b>Отзыв:</b> {message}</p>
+      <p><b>Комментарий:</b> {message}</p>
     </>
   ) : (
     <p>Судья еще не выставил оценку.</p>
