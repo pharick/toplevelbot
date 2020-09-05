@@ -124,19 +124,19 @@ def sent_participant_photos(bot, chat_id, participant_number, category_number):
         if category_number == LIPS:
             if participant['photo_lips_face_before']:
                 print(participant['photo_lips_face_before'])
-                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_lips_face_before'], None, 15000), caption='Лицо с губами до')
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_lips_face_before'].replace('backend:8000', 'toplevel.space')), caption='Лицо с губами до')
             if participant['photo_lips_before']:
-                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_lips_before'], None, 15000), caption='Губы до')
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_lips_before'].replace('backend:8000', 'toplevel.space')), caption='Губы до')
         elif category_number == EYELIDS:
             if participant['photo_eyeline_face_before']:
-                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_eyeline_face_before'], None, 15000), caption='Лицо с веками до')
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_eyeline_face_before'].replace('backend:8000', 'toplevel.space')), caption='Лицо с веками до')
             if participant['photo_eyeline_before']:
-                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_eyeline_before'], None, 15000), caption='Веки до')
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_eyeline_before'].replace('backend:8000', 'toplevel.space')), caption='Веки до')
         elif category_number == EYEBROWS:
             if participant['photo_brows_face_before']:
-                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_brows_face_before'], None, 15000), caption='Лицо с бровями до')
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_brows_face_before'].replace('backend:8000', 'toplevel.space')), caption='Лицо с бровями до')
             if participant['photo_brows_before']:
-                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_brows_before'], None, 15000), caption='Брови до')
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_brows_before'].replace('backend:8000', 'toplevel.space')), caption='Брови до')
     except urllib.error.HTTPError as e:
         pass
 
