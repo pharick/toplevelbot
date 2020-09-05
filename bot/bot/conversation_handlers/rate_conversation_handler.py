@@ -1,6 +1,6 @@
+import urllib
 from telegram import ParseMode, InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import CommandHandler, CallbackQueryHandler, ConversationHandler, MessageHandler, Filters
-from urllib import request
 
 from ..api import Api
 from ..settings import separator
@@ -120,21 +120,24 @@ def sent_participant_photos(bot, chat_id, participant_number, category_number):
     if not participant:
         return
 
-    # if category_number == LIPS:
-    #     if participant['photo_lips_face_before']:
-    #         bot.send_photo(chat_id, request.urlopen(participant['photo_lips_face_before']), caption='Лицо с губами до')
-    #     if participant['photo_lips_before']:
-    #         bot.send_photo(chat_id, request.urlopen(participant['photo_lips_before']), caption='Губы до')
-    # elif category_number == EYELIDS:
-    #     if participant['photo_eyeline_face_before']:
-    #         bot.send_photo(chat_id, request.urlopen(participant['photo_eyeline_face_before']), caption='Лицо с веками до')
-    #     if participant['photo_eyeline_before']:
-    #         bot.send_photo(chat_id, request.urlopen(participant['photo_eyeline_before']), caption='Веки до')
-    # elif category_number == EYEBROWS:
-    #     if participant['photo_brows_face_before']:
-    #         bot.send_photo(chat_id, request.urlopen(participant['photo_brows_face_before']), caption='Лицо с бровями до')
-    #     if participant['photo_brows_before']:
-    #         bot.send_photo(chat_id, request.urlopen(participant['photo_brows_before']), caption='Брови до')
+    try:
+        if category_number == LIPS:
+            if participant['photo_lips_face_before']:
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_lips_face_before'], None, 10000), caption='Лицо с губами до')
+            if participant['photo_lips_before']:
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_lips_before'], None, 10000), caption='Губы до')
+        elif category_number == EYELIDS:
+            if participant['photo_eyeline_face_before']:
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_eyeline_face_before'], None, 10000), caption='Лицо с веками до')
+            if participant['photo_eyeline_before']:
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_eyeline_before'], None, 10000), caption='Веки до')
+        elif category_number == EYEBROWS:
+            if participant['photo_brows_face_before']:
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_brows_face_before'], None, 10000), caption='Лицо с бровями до')
+            if participant['photo_brows_before']:
+                bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_brows_before'], None, 10000), caption='Брови до')
+    except urllib.error.HTTPError:
+        pass
 
 
 # 1. Начальная стадия
