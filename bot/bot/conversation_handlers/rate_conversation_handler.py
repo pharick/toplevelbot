@@ -120,21 +120,21 @@ def sent_participant_photos(bot, chat_id, participant_number, category_number):
     if not participant:
         return
 
-    if category_number == LIPS:
-        if participant['photo_lips_face_before']:
-            bot.send_photo(chat_id, request.urlopen(participant['photo_lips_face_before']), caption='Лицо с губами до')
-        if participant['photo_lips_before']:
-            bot.send_photo(chat_id, request.urlopen(participant['photo_lips_before']), caption='Губы до')
-    elif category_number == EYELIDS:
-        if participant['photo_eyeline_face_before']:
-            bot.send_photo(chat_id, request.urlopen(participant['photo_eyeline_face_before']), caption='Лицо с веками до')
-        if participant['photo_eyeline_before']:
-            bot.send_photo(chat_id, request.urlopen(participant['photo_eyeline_before']), caption='Веки до')
-    elif category_number == EYEBROWS:
-        if participant['photo_brows_face_before']:
-            bot.send_photo(chat_id, request.urlopen(participant['photo_brows_face_before']), caption='Лицо с бровями до')
-        if participant['photo_brows_before']:
-            bot.send_photo(chat_id, request.urlopen(participant['photo_brows_before']), caption='Брови до')
+    # if category_number == LIPS:
+    #     if participant['photo_lips_face_before']:
+    #         bot.send_photo(chat_id, request.urlopen(participant['photo_lips_face_before']), caption='Лицо с губами до')
+    #     if participant['photo_lips_before']:
+    #         bot.send_photo(chat_id, request.urlopen(participant['photo_lips_before']), caption='Губы до')
+    # elif category_number == EYELIDS:
+    #     if participant['photo_eyeline_face_before']:
+    #         bot.send_photo(chat_id, request.urlopen(participant['photo_eyeline_face_before']), caption='Лицо с веками до')
+    #     if participant['photo_eyeline_before']:
+    #         bot.send_photo(chat_id, request.urlopen(participant['photo_eyeline_before']), caption='Веки до')
+    # elif category_number == EYEBROWS:
+    #     if participant['photo_brows_face_before']:
+    #         bot.send_photo(chat_id, request.urlopen(participant['photo_brows_face_before']), caption='Лицо с бровями до')
+    #     if participant['photo_brows_before']:
+    #         bot.send_photo(chat_id, request.urlopen(participant['photo_brows_before']), caption='Брови до')
 
 
 # 1. Начальная стадия
