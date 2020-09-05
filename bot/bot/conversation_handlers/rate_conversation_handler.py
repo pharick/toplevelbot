@@ -123,6 +123,7 @@ def sent_participant_photos(bot, chat_id, participant_number, category_number):
     try:
         if category_number == LIPS:
             if participant['photo_lips_face_before']:
+                print(participant['photo_lips_face_before'])
                 bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_lips_face_before'], None, 15000), caption='Лицо с губами до')
             if participant['photo_lips_before']:
                 bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_lips_before'], None, 15000), caption='Губы до')
@@ -137,7 +138,7 @@ def sent_participant_photos(bot, chat_id, participant_number, category_number):
             if participant['photo_brows_before']:
                 bot.send_photo(chat_id, urllib.request.urlopen(participant['photo_brows_before'], None, 15000), caption='Брови до')
     except urllib.error.HTTPError as e:
-        print(e)
+        pass
 
 
 # 1. Начальная стадия
