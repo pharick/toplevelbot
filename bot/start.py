@@ -1,3 +1,4 @@
+import os
 import bot.handlers as handlers
 from bot import Bot
 
@@ -5,7 +6,7 @@ from bot.conversation_handlers import rateConversationHandler, doctorRateConvers
 
 
 def main():
-    token = '881682371:AAE6aXri7GrTvdIxkUf2e7Ii98xtVzNgnu0'
+    token = os.environ.get('TOKEN')
 
     bot = Bot(token)
 

@@ -50,6 +50,8 @@ services:
   bot:
     build: ./bot
     command: bash -c "python start.py"
+    environment:
+      - TOKEN=
     depends_on:
       - backend
 
